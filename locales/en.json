@@ -1,0 +1,42 @@
+{
+    "loading": "Loading...",
+    "error_prefix_not_defined": "Error: Prefix is not defined",
+    "error_client_user_not_defined": "Error: Client user is not defined",
+    "presence_activity": "in the counting channel",
+    "logged_in_as": "Logged in as {{user_tag}}",
+    "no_permission_reset": "You do not have permission to reset the counter.",
+    "counter_reset": "The counter has been reset. In this round, you must count to **{{target}}**. (Mode: {{mode_title}})",
+    "no_permission_start": "You do not have permission to start the game.",
+    "game_started": "The game has started! You must count to **{{target}}**. Good luck! (Mode: {{mode_title}})",
+    "cannot_count_twice": "You cannot count twice in a row!",
+    "not_a_number": "That's not a number! {{reset_message}} In this round, you must count to **{target}**. (Mode: {{mode_title}})",
+    "reset_message_negative": "The game starts again at -1.",
+    "reset_message_positive": "The game starts again at 1.",
+    "goal_reached": "🎉 Congratulations! The goal has been reached.\n{{reset_message}} and you must count to **{{target}}**. Good luck! (Mode: {{mode_title}})",
+    "wrong_number": "Wrong number! {{reset_message}} In this round, you must count to **{{target}}**. (Mode: {{mode_title}})",
+    "explanation_title": "Explanation",
+    "bot_running": "Bot is running!",
+    "database_url_not_set": "DATABASE_URL not set. Please add your database URL to the .env file. This URL should be a connection string to your database.\nIf you don't know what this is, please refer to this documentation: https://www.prisma.io/docs/concepts/database-connectors/mysql#connection-url\nIf you want to use a different database provider (e.g. SQLite, PostgreSQL, etc.), please change the 'provider' field in the 'schema.prisma' file accordingly.",
+    "token_not_set": "TOKEN not set. Please add your bot token to the .env file. This token is required to authenticate your bot with Discord.\nIf you don't have a bot token yet, please refer to this documentation: https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot\nIf you have a bot token, please add it to the .env file",
+    "prefix_not_set": "PREFIX not set. Please add your desired prefix to the .env file. This prefix is used to identify commands for your bot.\nIf you don't know what a prefix is, it is a character that is placed before a command to tell the bot that it is a command.\nFor example, if you set your prefix to '!', you would use commands like '!help' or '!ping'.\nPlease add your desired prefix to the .env file.",
+    "positive_numbers": {
+        "title": "Positive Numbers",
+        "description": "Just count up from 1: `1`, `2`, `3`, `4`, `5`, …"
+    },
+    "positive_odd_numbers": {
+        "title": "Odd Positive Numbers",
+        "description": "Count up from 1, but only the odd numbers: `1`, `3`, `5`, `7`, `9`, …"
+    },
+    "positive_even_numbers": {
+        "title": "Even Positive Numbers",
+        "description": "Count up from 2, but only the even numbers: `2`, `4`, `6`, `8`, `10`, …"
+    },
+    "negative_numbers": {
+        "title": "Negative Numbers",
+        "description": "Count down from -1: `-1`, `-2`, `-3`, `-4`, `-5`, …"
+    },
+    "mode_not_found": {
+        "title": "Mode not found",
+        "description": "please try again."
+    }
+}

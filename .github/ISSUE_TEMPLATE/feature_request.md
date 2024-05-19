@@ -1,20 +1,20 @@
 ---
 name: Feature Request
-about: Vorschlag für ein neues Feature für den Bot
+about: Suggest a new feature for the bot
 title: "[FEATURE] "
 labels: enhancement
 assignees: ''
 
 ---
 
-**Ist dein Feature-Wunsch mit einem Problem verbunden? Bitte beschreibe es.**
-Eine klare und präzise Beschreibung des Problems. Beispiel: Ich bin immer frustriert, wenn [...]
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-**Beschreibe die Lösung, die du möchtest**
-Eine klare und präzise Beschreibung dessen, was du möchtest.
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
 
-**Beschreibe Alternativen, die du in Betracht gezogen hast**
-Eine klare und präzise Beschreibung von alternativen Lösungen oder Features, die du in Betracht gezogen hast.
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
 
-**Zusätzlicher Kontext**
-Füge hier zusätzlichen Kontext oder Screenshots zur Feature-Anfrage hinzu.
+**Additional context**
+Add any other context or screenshots about the feature request here.

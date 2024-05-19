@@ -1,31 +1,31 @@
 ---
 name: Bug Report
-about: Melde ein Problem mit dem Bot
+about: Report a problem with the bot
 title: "[BUG] "
 labels: bug
 assignees: ''
 
 ---
 
-**Beschreibe den Fehler**
-Eine klare und präzise Beschreibung des Problems.
+**Describe the bug**
+A clear and concise description of what the bug is.
 
-**Reproduktionsschritte**
-Schritte, um das Verhalten zu reproduzieren:
-1. Gehe zu '...'
-2. Klicke auf '....'
-3. Scrolle nach unten zu '....'
-4. Siehe Fehler
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
-**Erwartetes Verhalten**
-Eine klare und präzise Beschreibung dessen, was du erwartet hast, dass passiert.
+**Expected behavior**
+A clear and concise description of what you expected to happen.
 
 **Screenshots**
-Falls zutreffend, füge Screenshots bei, um das Problem zu erklären.
+If applicable, add screenshots to help explain your problem.
 
-**Systeminformationen:**
- - Betriebssystem: [z.B. Windows, MacOS]
- - Node.js Version: [z.B. v14]
+**System Information:**
+ - OS: [e.g. Windows, MacOS]
+ - Node.js Version: [e.g. v14]
 
-**Zusätzlicher Kontext**
-Füge hier zusätzlichen Kontext zum Problem hinzu.
+**Additional context**
+Add any other context about the problem here.
