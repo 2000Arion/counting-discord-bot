@@ -6,4 +6,4 @@ const tutorialButton = new ButtonBuilder()
     .setStyle(ButtonStyle.Secondary) // Grauer Button
     .setEmoji('❔');
 
-module.exports = { tutorialButton };
+export default tutorialButton;

@@ -1,10 +1,8 @@
-
-// TODO: Falsch, wenn eine Person 2 Nachrichten hintereinander sendet
-
-import { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, PermissionsBitField } from 'discord.js';
+import { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, EmbedBuilder } from 'discord.js';
 require('dotenv').config();
 
 import getModeTutorial from './game/gameModeTutorials';
+import tutorialButton from './builders/ButtonBuilder';
 
 import assertEnv from './helper/envAsserter';
 
@@ -116,7 +114,12 @@ client.on('messageCreate', async (message) => {
     const lastCounter = await getLatestSender(channel.id);
     if (lastCounter === message.author.id) {
         await message.react('❌');
-        await message.channel.send('Du kannst nicht zweimal hintereinander zählen!');
+        const button = tutorialButton.setCustomId(mode)
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+        await message.channel.send({
+            content: 'Du kannst nicht zweimal hintereinander zählen!',
+            components: [row]
+        });
         return;
     }
 
@@ -126,20 +129,20 @@ client.on('messageCreate', async (message) => {
         await resetCount(mode, channel.id);
         const target = await getTarget(channel.id);
         await message.react('❌');
-        if (target) {
-            const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-            await message.channel.send(`Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`);
-        } else {
-            const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-            await message.channel.send(`Das ist keine Zahl! ${resetMessage} (Modus: ${messageInformation.title})`);
-        }
+        const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
+        const button = tutorialButton.setCustomId(mode)
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+        await message.channel.send({
+            content: `Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`,
+            components: [row]
+        });
         return;
     }
 
     const latestCount = await getLatestCount(channel.id);
 
     // Überprüfen, ob die eingegebene Zahl basierend auf dem aktuellen Modus korrekt ist
-    let expectedCount: number;
+    let expectedCount;
     if (mode === 'positive_odd') {
         if (latestCount === 0) {
             expectedCount = 1; // Start mit 1, da 0 keine ungerade Zahl ist
@@ -164,7 +167,12 @@ client.on('messageCreate', async (message) => {
             await message.react('🎉');
             let target = await getTarget(channel.id);
             const resetMessage = mode === 'negative' ? 'Das Spiel beginnt jetzt wieder bei -1' : 'Das Spiel beginnt jetzt wieder bei 1';
-            await message.channel.send(`🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${messageInformation.title})`);
+            const button = tutorialButton.setCustomId(mode)
+            const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+            await message.channel.send({
+                content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${messageInformation.title})`,
+                components: [row]
+            });
         } else {
             await message.react('✅');
         }
@@ -174,15 +182,43 @@ client.on('messageCreate', async (message) => {
         await resetCount(mode, channel.id);
         let target = await getTarget(channel.id); // Ziel nach dem Zurücksetzen aktualisieren
         await message.react('❌');
-        if (target) {
-            const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-            await message.channel.send(`Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`);
-        } else {
-            const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-            await message.channel.send(`Falsche Zahl! ${resetMessage} (Modus: ${messageInformation.title})`);
-        }
+        const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
+        const button = tutorialButton.setCustomId(mode)
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+        await message.channel.send({
+            content: `Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`,
+            components: [row]
+        });
     }
 });
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isButton()) return;
+
+    const { customId, channel } = interaction;
+
+    switch (customId) {
+        case 'all':
+        case 'positive_odd':
+        case 'positive_even':
+        case 'negative':
+            const mode = customId;
+            const messageInformation = getModeTutorial(mode);
+
+            const embed = new EmbedBuilder()
+                .setColor(0x31985)
+                .setTitle("Erklärung")
+                .setDescription(messageInformation.description);
+
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            break;
+
+        // Add more cases for other buttons if needed
+        default:
+            console.log(`Unhandled button click with customId: ${customId}`);
+    }
+});
+
 
 client.login(process.env.TOKEN).then(() => {
     console.log('Bot is running!'); // Wenn erfolgreich eingeloggt, 'Bot is running!' ausgeben
