@@ -72,16 +72,11 @@ client.on('messageCreate', async (message) => {
     if (!message.channel) return; // wenn die Nachricht in keinem Kanal geschrieben wurde, beenden
     if (!message.guild) return; // wenn die Nachricht in keinem Server geschrieben wurde, beenden (z. B. DMs)
     if (message.author.bot) return; // wenn der Autor der Nachricht ein Bot ist, beenden
-
     const channel = message.channel; // Kanal, in dem die Nachricht gesendet wurde
     const guild = message.guild; // Server, in dem die Nachricht gesendet wurde
 
     if (!channel.id) return; // wenn keine Kanal-ID vorhanden ist, beenden
     if (!guild.id) return; // wenn keine Server-ID vorhanden ist, beenden
-
-    const game = await getGameData(channel.id);
-
-    if (!game) return;
 
     if (message.content.startsWith(PREFIX)) {
         if (message.content === `${PREFIX}reset`) {
@@ -106,6 +101,7 @@ client.on('messageCreate', async (message) => {
             if (target) {
                 await message.channel.send(`Der Zähler wurde zurückgesetzt. In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`);
             }
+            return;
         }
 
         if (message.content === `${PREFIX}start`) {
@@ -129,8 +125,13 @@ client.on('messageCreate', async (message) => {
             if (target) {
                 await message.channel.send(`Das Spiel wurde gestartet! Ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${messageInformation.title})`);
             }
+            return;
         }
     }
+
+    const game = await getGameData(channel.id);
+
+    if (!game) return;
 
     const userCount = parseInt(message.content, 10);
     const mode = await getMode(channel.id); // Aktuellen Modus abrufen
