@@ -1,9 +1,9 @@
 const { ButtonBuilder, ButtonStyle } = require('discord.js');
 
-const confirmButton = new ButtonBuilder()
+const tutorialButton = new ButtonBuilder()
     .setCustomId('confirm_button')
     .setLabel('Erklärung')
     .setStyle(ButtonStyle.Secondary) // Grauer Button
     .setEmoji('❔');
 
-module.exports = { confirmButton };
+module.exports = { tutorialButton };

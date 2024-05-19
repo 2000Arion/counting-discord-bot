@@ -1,7 +1,7 @@
 
 // TODO: Falsch, wenn eine Person 2 Nachrichten hintereinander sendet
 
-const { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, ActionRowBuilder } = require('discord.js');
 require('dotenv').config();
 
 const { initializeDatabase, getLatestCount, updateCount, getMode, resetCount, getTarget } = require('./game/gameFunctions');
@@ -66,12 +66,22 @@ client.on('messageCreate', async (message) => {
             await resetCount(mode);
             const target = await getTarget();
             await message.react('❌');
+
+            const row = new ActionRowBuilder()
+                .addComponents(tutorialButton);
+
             if (target) {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-                await message.channel.send(`Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`);
+                await message.channel.send({
+                    content: `Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`,
+                    components: [row],
+                });
             } else {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-                await message.channel.send(`Das ist keine Zahl! ${resetMessage} (Modus: ${tutorialTitle})`);
+                await message.channel.send({
+                    content: `Das ist keine Zahl! ${resetMessage} (Modus: ${tutorialTitle})`,
+                    components: [row],
+                });
             }
             return;
         }
@@ -103,8 +113,15 @@ client.on('messageCreate', async (message) => {
                 await resetCount(mode);
                 await message.react('🎉');
                 let target = await getTarget();
+
+                const row = new ActionRowBuilder()
+                    .addComponents(tutorialButton);
+
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt jetzt wieder bei -1' : 'Das Spiel beginnt jetzt wieder bei 1';
-                await message.channel.send(`🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${tutorialTitle})`);
+                await message.channel.send({
+                    content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
+                    components: [row],
+                });
             } else {
                 await message.react('✅');
             }
@@ -114,12 +131,22 @@ client.on('messageCreate', async (message) => {
             await resetCount(mode);
             let target = await getTarget(); // Ziel nach dem Zurücksetzen aktualisieren
             await message.react('❌');
+
+            const row = new ActionRowBuilder()
+                    .addComponents(tutorialButton);
+
             if (target) {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-                await message.channel.send(`Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`);
+                await message.channel.send({
+                    content: `Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`,
+                    components: [row],
+            });
             } else {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-                await message.channel.send(`Falsche Zahl! ${resetMessage} (Modus: ${tutorialTitle})`);
+                await message.channel.send({
+                    content: `Falsche Zahl! ${resetMessage} (Modus: ${tutorialTitle})`,
+                    components: [row],
+            });
             }
         }
     }
