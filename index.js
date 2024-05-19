@@ -5,6 +5,7 @@ const { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, ActionRow
 require('dotenv').config();
 
 const { initializeDatabase, getLatestCount, updateCount, getMode, resetCount, getTarget } = require('./game/gameFunctions');
+const { getModeTutorial } = require('./game/gameModeTutorials');
 const { tutorialButton } = require('./builders/ButtonBuilder');
 
 console.log('Loading...');
@@ -28,31 +29,6 @@ function getRandomMode() {
     return modes[Math.floor(Math.random() * modes.length)];
 }
 
-function getModeTutorial(mode) {
-    let tutorialTitle;
-    let tutorialDescription;
-
-    if (mode === 'all') {
-        tutorialTitle = 'Positive Zahlen';
-        tutorialDescription = 'Zähle einfach aufwärts von eins an: `1`, `2`, `3`, `4`, ...';
-    } else if (mode === 'positive_odd') {
-        tutorialTitle = 'Ungerade Zahlen';
-        tutorialDescription = 'Zähle nur die ungeraden Zahlen: `1`, `3`, `5`, `7`, ...';
-    } else if (mode === 'positive_even') {
-        tutorialTitle = 'Gerade Zahlen';
-        tutorialDescription = 'Zähle nur die geraden Zahlen: `2`, `4`, `6`, `8`, ...';
-    } else if (mode === 'negative') {
-        tutorialTitle = 'Negative Zahlen';
-        tutorialDescription = 'Zähle abwärts von null: `-1`, `-2`, `-3`, `-4`, ...';
-    } else {
-        // Wenn der Modus unbekannt ist, Standardwerte setzen
-        tutorialTitle = 'Modus nicht gefunden';
-        tutorialDescription = 'Bitte überprüfe den ausgewählten Modus.';
-    }
-
-    return [tutorialTitle, tutorialDescription];
-}
-
 client.on('messageCreate', async (message) => {
     if (message.channel.id === '1241721012500959264' && message.guild.id === '831161440705839124') {
         if (message.author.bot) return;
@@ -62,13 +38,10 @@ client.on('messageCreate', async (message) => {
 
         if (isNaN(userCount) || message.content.trim() !== userCount.toString()) {
             const mode = getRandomMode();
-            const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
+            const [tutorialTitle, row] = getModeTutorial(mode);
             await resetCount(mode);
             const target = await getTarget();
             await message.react('❌');
-
-            const row = new ActionRowBuilder()
-                .addComponents(tutorialButton);
 
             if (target) {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
@@ -109,13 +82,10 @@ client.on('messageCreate', async (message) => {
             await updateCount(userCount, message.author.id);
             if (userCount === target) {
                 const mode = getRandomMode();
-                const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
+                const [tutorialTitle, row] = getModeTutorial(mode);
                 await resetCount(mode);
                 await message.react('🎉');
                 let target = await getTarget();
-
-                const row = new ActionRowBuilder()
-                    .addComponents(tutorialButton);
 
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt jetzt wieder bei -1' : 'Das Spiel beginnt jetzt wieder bei 1';
                 await message.channel.send({
@@ -127,30 +97,38 @@ client.on('messageCreate', async (message) => {
             }
         } else {
             const mode = getRandomMode();
-            const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
+            const [tutorialTitle, row] = getModeTutorial(mode);
             await resetCount(mode);
             let target = await getTarget(); // Ziel nach dem Zurücksetzen aktualisieren
             await message.react('❌');
-
-            const row = new ActionRowBuilder()
-                    .addComponents(tutorialButton);
 
             if (target) {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
                 await message.channel.send({
                     content: `Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`,
                     components: [row],
-            });
+                });
             } else {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
                 await message.channel.send({
                     content: `Falsche Zahl! ${resetMessage} (Modus: ${tutorialTitle})`,
                     components: [row],
-            });
+                });
             }
         }
     }
 });
+
+client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isButton()) return;
+
+    const { customId } = interaction;
+
+    const tutorialDescription = getModeTutorial(customId)
+        
+        await interaction.reply({ content: `**Erklärung:**\n${tutorialDescription}`, ephemeral: true });
+    }
+);
 
 // Initialisiere die Datenbank und logge den Bot ein, wenn erfolgreich
 initializeDatabase().then(() => {
