@@ -1,10 +1,10 @@
 // Funktionen für verschiedene Spielmodi
 
-function getRandomInt(min, max) {
+function getRandomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateTarget(mode) {
+function generateTarget(mode: string) {
     if (mode === 'positive_odd') {
         return Math.floor(Math.random() * 100) * 2 + 1; // Zufällige ungerade positive Zahl zwischen 1 und 200
     } else if (mode === 'positive_even') {
@@ -16,6 +16,7 @@ function generateTarget(mode) {
     }
 }
 
-module.exports = {
-    generateTarget
-};
+export {
+    generateTarget,
+    getRandomInt
+}

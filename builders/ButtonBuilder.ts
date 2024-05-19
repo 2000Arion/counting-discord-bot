@@ -1,4 +1,4 @@
-const { ButtonBuilder, ButtonStyle } = require('discord.js');
+import { ButtonBuilder, ButtonStyle } from 'discord.js';
 
 const tutorialButton = new ButtonBuilder()
     .setCustomId('confirm_button')
