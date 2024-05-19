@@ -3,7 +3,7 @@ import prisma from '../prisma/client';
 import { generateTarget } from './gameModes';
 
 async function getLatestCount(channelId: string) {
-    const latestCount = await prisma.CurrentCount.findFirst({
+    const latestCount = await prisma.currentCount.findFirst({
         where: {
             id: channelId
         }
@@ -12,7 +12,7 @@ async function getLatestCount(channelId: string) {
 }
 
 async function getGameData(channelId: string) {
-    const gameData = await prisma.CurrentCount.findUnique({
+    const gameData = await prisma.currentCount.findUnique({
         where: {
             id: channelId
         }
@@ -21,14 +21,14 @@ async function getGameData(channelId: string) {
 }
 
 async function updateCount(newCount: number, senderId: string, channelId: string) {
-    const count = await prisma.CurrentCount.findUnique({
+    const count = await prisma.currentCount.findUnique({
         where: {
             id: channelId
         }
     });
 
     if (count) { // Wenn ein Zählstand für diesen Kanal existiert
-        await prisma.CurrentCount.update({
+        await prisma.currentCount.update({
             where: {
                 id: channelId
             },
@@ -38,18 +38,20 @@ async function updateCount(newCount: number, senderId: string, channelId: string
             }
         });
     } else { // Wenn kein Zählstand für diesen Kanal existiert
-        await prisma.CurrentCount.create({
+        await prisma.currentCount.create({
             data: {
                 id: channelId,
                 number: newCount,
-                senderId: senderId
+                senderId: senderId,
+                mode: 'all',
+                targert: generateTarget('all')
             }
         });
     }
 }
 
 async function getMode(channelId: string) {
-    const gameMode = await prisma.CurrentCount.findUnique({
+    const gameMode = await prisma.currentCount.findUnique({
         where: {
             id: channelId
         }
@@ -77,7 +79,7 @@ async function resetCount(mode: string, channelId: string) {
 
 async function getTarget(channelId: string) {
 
-    const target = await prisma.CurrentCount.findUnique({
+    const target = await prisma.currentCount.findUnique({
         where: {
             id: channelId
         }
