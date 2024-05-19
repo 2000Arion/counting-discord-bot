@@ -14,7 +14,7 @@ model CurrentCount {
   id       String @id
   number   Int    @default(0)
   senderId String
-  target  Int
+  target   Int
   mode     String
 }
 
