@@ -28,6 +28,12 @@ async function getLatestCount() {
     return rows.length > 0 ? rows[0].number : 0;
 }
 
+async function getLatestSender() {
+    const [rows] = await pool.query('SELECT senderId FROM currentCount ORDER BY id DESC LIMIT 1');
+    return rows.length > 0 ? rows[0].senderId : null;
+}
+
+
 async function updateCount(newCount, senderId) {
     await pool.query('INSERT INTO currentCount (number, senderId) VALUES (?, ?)', [newCount, senderId]);
 }
@@ -60,6 +66,7 @@ async function getTarget() {
 module.exports = {
     initializeDatabase,
     getLatestCount,
+    getLatestSender,
     updateCount,
     getMode,
     resetCount,
