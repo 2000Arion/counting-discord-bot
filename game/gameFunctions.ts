@@ -65,12 +65,12 @@ async function resetCount(mode: string, channelId: string) {
 
     await prisma.currentCount.update({
         where: {
-            id: 1
+            id: channelId
         },
         data: {
             target: target,
             number: 0,
-            senderId: null,
+            senderId: undefined,
             mode: mode
         }
     });
