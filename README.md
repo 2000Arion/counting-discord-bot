@@ -1,19 +1,19 @@
 # Counting Bot
 
-Counting Bot ist ein Discord-Bot, der es ermöglicht, in verschiedenen Modi Zahlen zu zählen. Der Bot überwacht die Nachrichten in einem Kanal und überprüft, ob die eingetragenen Zahlen korrekt sind. Wenn eine falsche Zahl eingetragen wird, wird das Spiel zurückgesetzt.
+Counting Bot is a Discord bot that allows users to count numbers in various modes. The bot monitors messages in a channel and checks if the entered numbers are correct. If an incorrect number is entered, the game is reset.
 
-## Funktionen
+## Features
 
-- Starten des Spiels mit verschiedenen Modi
-- Automatisches Zurücksetzen bei falschen Zahlen
-- Unterstützt mehrere Modi wie gerade Zahlen, ungerade Zahlen und negative Zahlen
-- Berechtigungskontrollen für das Zurücksetzen und Starten des Spiels
+- Start a game with different modes
+- Automatically reset the game when incorrect numbers are entered
+- Supports multiple modes such as even numbers, odd numbers, and negative numbers
+- Permission checks for resetting and starting the game
 
-## Voraussetzungen
+## Prerequisites
 
-- Node.js v14 oder höher
-- Ein Discord-Bot-Token
-- Ein `.env` Datei mit den folgenden Variablen:
+- Node.js v14 or higher
+- A Discord bot token
+- A `.env` file with the following variables:
   ```
     DATABASE_URL=[Database connection String](https://www.prisma.io/docs/concepts/database-connectors/mysql#connection-url)
 
@@ -24,38 +24,40 @@ Counting Bot ist ein Discord-Bot, der es ermöglicht, in verschiedenen Modi Zahl
 
 ## Installation
 
-1. Klone das Repository:
+1. Clone the repository:
   ```sh
-  git clone https://github.com/2000Arion/counting-bot.git
+  git clone https://github.com/your-username/counting-bot.git
   cd counting-bot
   ```
 
-2. Installiere die Abhängigkeiten:
+2. Install the dependencies:
   ```sh
   npm install
   ```
 
-3. Erstelle eine `.env` Datei im Stammverzeichnis und füge deinen Bot-Token und Präfix hinzu:
+3. Create a `.env` file in the root directory and add your bot token and prefix:
   ```
     DATABASE_URL=[Database connection String](https://www.prisma.io/docs/concepts/database-connectors/mysql#connection-url)
+
     TOKEN=[your Discord Token](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)
+
     PREFIX=c!
   ```
 
-4. Starte den Bot:
+4. Start the bot:
   ```sh
   npm start
   ```
 
-## Nutzung
+## Usage
 
-- Um das Spiel zu starten, verwende den Befehl: `c!start`
-- Um den Zähler zurückzusetzen, verwende den Befehl: `c!reset`
+- To start the game, use the command: `!start`
+- To reset the counter, use the command: `!reset`
 
-## Beitrag leisten
+## Contributing
 
-Beiträge sind willkommen! Bitte eröffne ein Issue, um Fehler zu melden oder Features vorzuschlagen.
+Contributions are welcome! Please open an issue to report bugs or suggest features.
 
-## Lizenz
+## License
 
-Dieses Projekt steht unter der MIT-Lizenz. Weitere Informationen findest du in der `LICENSE` Datei.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
