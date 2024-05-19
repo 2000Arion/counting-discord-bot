@@ -4,7 +4,8 @@
 const { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType } = require('discord.js');
 require('dotenv').config();
 
-const { initializeDatabase, getLatestCount, updateCount, getMode, resetCount, getTarget } = require('./gameFunctions');
+const { initializeDatabase, getLatestCount, updateCount, getMode, resetCount, getTarget } = require('./game/gameFunctions');
+const { tutorialButton } = require('./builders/ButtonBuilder');
 
 console.log('Loading...');
 
