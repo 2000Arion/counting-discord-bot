@@ -44,7 +44,7 @@ async function updateCount(newCount: number, senderId: string, channelId: string
                 number: newCount,
                 senderId: senderId,
                 mode: 'all',
-                targert: generateTarget('all')
+                target: generateTarget('all')
             }
         });
     }
