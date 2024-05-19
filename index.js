@@ -1,12 +1,11 @@
 
 // TODO: Falsch, wenn eine Person 2 Nachrichten hintereinander sendet
 
-const { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, ActionRowBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType } = require('discord.js');
 require('dotenv').config();
 
 const { initializeDatabase, getLatestCount, updateCount, getMode, resetCount, getTarget } = require('./game/gameFunctions');
 const { getModeTutorial } = require('./game/gameModeTutorials');
-const { tutorialButton } = require('./builders/ButtonBuilder');
 
 console.log('Loading...');
 
@@ -38,7 +37,7 @@ client.on('messageCreate', async (message) => {
 
         if (isNaN(userCount) || message.content.trim() !== userCount.toString()) {
             const mode = getRandomMode();
-            const [tutorialTitle, row] = getModeTutorial(mode);
+            const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
             await resetCount(mode);
             const target = await getTarget();
             await message.react('❌');
@@ -47,13 +46,25 @@ client.on('messageCreate', async (message) => {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
                 await message.channel.send({
                     content: `Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`,
-                    components: [row],
+                    embeds: [
+                        {
+                            title: "Erklärung",
+                            description: tutorialDescription,
+                            color: 31985
+                          }
+                        ],
                 });
-            } else {
+            } else { // (Dieses else könnte eigentlich auch weg)
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
                 await message.channel.send({
                     content: `Das ist keine Zahl! ${resetMessage} (Modus: ${tutorialTitle})`,
-                    components: [row],
+                    embeds: [
+                        {
+                            title: "Erklärung",
+                            description: tutorialDescription,
+                            color: 31985
+                          }
+                        ],
                 });
             }
             return;
@@ -82,7 +93,7 @@ client.on('messageCreate', async (message) => {
             await updateCount(userCount, message.author.id);
             if (userCount === target) {
                 const mode = getRandomMode();
-                const [tutorialTitle, row] = getModeTutorial(mode);
+                const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
                 await resetCount(mode);
                 await message.react('🎉');
                 let target = await getTarget();
@@ -90,14 +101,20 @@ client.on('messageCreate', async (message) => {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt jetzt wieder bei -1' : 'Das Spiel beginnt jetzt wieder bei 1';
                 await message.channel.send({
                     content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
-                    components: [row],
+                    embeds: [
+                        {
+                            title: "Erklärung",
+                            description: tutorialDescription,
+                            color: 31985
+                        }
+                    ],
                 });
             } else {
                 await message.react('✅');
             }
         } else {
             const mode = getRandomMode();
-            const [tutorialTitle, row] = getModeTutorial(mode);
+            const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
             await resetCount(mode);
             let target = await getTarget(); // Ziel nach dem Zurücksetzen aktualisieren
             await message.react('❌');
@@ -106,29 +123,30 @@ client.on('messageCreate', async (message) => {
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
                 await message.channel.send({
                     content: `Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`,
-                    components: [row],
+                    embeds: [
+                        {
+                            title: "Erklärung",
+                            description: tutorialDescription,
+                            color: 31985
+                        }
+                    ],
                 });
-            } else {
+            } else { // (Dieses else könnte eigentlich auch weg)
                 const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
                 await message.channel.send({
                     content: `Falsche Zahl! ${resetMessage} (Modus: ${tutorialTitle})`,
-                    components: [row],
+                    embeds: [
+                        {
+                            title: "Erklärung",
+                            description: tutorialDescription,
+                            color: 31985
+                        }
+                    ],
                 });
             }
         }
     }
 });
-
-client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isButton()) return;
-
-    const { customId } = interaction;
-
-    const tutorialDescription = getModeTutorial(customId)
-        
-        await interaction.reply({ content: `**Erklärung:**\n${tutorialDescription}`, ephemeral: true });
-    }
-);
 
 // Initialisiere die Datenbank und logge den Bot ein, wenn erfolgreich
 initializeDatabase().then(() => {
