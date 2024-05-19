@@ -8,7 +8,7 @@ import getModeTutorial from './game/gameModeTutorials';
 
 import assertEnv from './helper/envAsserter';
 
-import { getLatestCount, updateCount, getMode, resetCount, getTarget, getGameData } from './game/gameFunctions';
+import { getLatestCount, updateCount, getMode, resetCount, getTarget, getGameData, getLatestSender } from './game/gameFunctions';
 
 assertEnv();
 
@@ -112,6 +112,13 @@ client.on('messageCreate', async (message) => {
 
     const userCount = parseInt(message.content, 10);
     const mode = await getMode(channel.id); // Aktuellen Modus abrufen
+
+    const lastCounter = await getLatestSender(channel.id);
+    if (lastCounter === message.author.id) {
+        await message.react('❌');
+        await message.channel.send('Du kannst nicht zweimal hintereinander zählen!');
+        return;
+    }
 
     if (isNaN(userCount) || message.content.trim() !== userCount.toString()) {
         const mode = getRandomMode();
