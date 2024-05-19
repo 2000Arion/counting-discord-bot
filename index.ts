@@ -4,9 +4,20 @@
 import { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType } from 'discord.js';
 require('dotenv').config();
 
+import assertEnv from './helper/envAsserter';
+
 import { getLatestCount, updateCount, getMode, resetCount, getTarget, getGameData } from './game/gameFunctions';
 
+assertEnv();
+
 console.log('Loading...');
+
+const PREFIX = process.env.PREFIX;
+
+if(!PREFIX) {
+    console.log('Error: Prefix is not defined');
+    process.exit(1); // Beendet das Programm, wenn der Präfix nicht definiert ist
+}
 
 const client = new Client({
     intents: [
@@ -57,17 +68,16 @@ function getModeTutorial(mode: string) {
 }
 
 client.on('messageCreate', async (message) => {
-    if (!message) return;
-    if (!message.channel) return;
-    if (!message.guild) return;
-    if (message.author.bot) return;
+    if (!message) return; // wenn keine Nachricht vorhanden ist, beenden
+    if (!message.channel) return; // wenn die Nachricht in keinem Kanal geschrieben wurde, beenden
+    if (!message.guild) return; // wenn die Nachricht in keinem Server geschrieben wurde, beenden (z. B. DMs)
+    if (message.author.bot) return; // wenn der Autor der Nachricht ein Bot ist, beenden
 
-    const channel = message.channel;
-    const guild = message.guild;
+    const channel = message.channel; // Kanal, in dem die Nachricht gesendet wurde
+    const guild = message.guild; // Server, in dem die Nachricht gesendet wurde
 
-    if (!channel.id) return;
-    if (!guild.id) return;
-
+    if (!channel.id) return; // wenn keine Kanal-ID vorhanden ist, beenden
+    if (!guild.id) return; // wenn keine Server-ID vorhanden ist, beenden
 
     const game = await getGameData(channel.id);
 
