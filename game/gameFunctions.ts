@@ -37,16 +37,19 @@ async function updateCount(newCount: number, senderId: string, channelId: string
                 senderId: senderId
             }
         });
+        return count.target;
     } else { // Wenn kein Zählstand für diesen Kanal existiert
+        const target = generateTarget('all');
         await prisma.currentCount.create({
             data: {
                 id: channelId,
                 number: newCount,
                 senderId: senderId,
                 mode: 'all',
-                target: generateTarget('all')
+                target: target
             }
         });
+        return target;
     }
 }
 

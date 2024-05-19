@@ -1,7 +1,7 @@
 
 // TODO: Falsch, wenn eine Person 2 Nachrichten hintereinander sendet
 
-import { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType } from 'discord.js';
+import { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, PermissionsBitField } from 'discord.js';
 require('dotenv').config();
 
 import assertEnv from './helper/envAsserter';
@@ -14,7 +14,7 @@ console.log('Loading...');
 
 const PREFIX = process.env.PREFIX;
 
-if(!PREFIX) {
+if (!PREFIX) {
     console.log('Error: Prefix is not defined');
     process.exit(1); // Beendet das Programm, wenn der Präfix nicht definiert ist
 }
@@ -83,6 +83,54 @@ client.on('messageCreate', async (message) => {
 
     if (!game) return;
 
+    if (message.content.startsWith(PREFIX)) {
+        if (message.content === `${PREFIX}reset`) {
+            const author = message.author;
+            if (!author) return;
+            if (!author.id) return;
+
+            const member = guild.members.cache.get(author.id);
+
+            if (!member) return;
+
+            if (!member.permissions.has([PermissionsBitField.Flags.KickMembers])) {
+                await message.channel.send('Du hast nicht die Berechtigung, den Zähler zurückzusetzen.');
+                return;
+            }
+
+            const mode = getRandomMode();
+            const messageInformation = getModeTutorial(mode);
+            await resetCount(mode, channel.id);
+            const target = await getTarget(channel.id);
+            await message.react('🔄')
+            if (target) {
+                await message.channel.send(`Der Zähler wurde zurückgesetzt. In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`);
+            }
+        }
+
+        if (message.content === `${PREFIX}start`) {
+            const author = message.author;
+            if (!author) return;
+            if (!author.id) return;
+
+            const member = guild.members.cache.get(author.id);
+
+            if (!member) return;
+
+            if (!member.permissions.has([PermissionsBitField.Flags.KickMembers])) {
+                await message.channel.send('Du hast nicht die Berechtigung, das Spiel zu starten.');
+                return;
+            }
+
+            const mode = getRandomMode();
+            const target = await updateCount(0, "", channel.id);
+            const messageInformation = getModeTutorial(mode);
+            await message.react('🎉');
+            if (target) {
+                await message.channel.send(`Das Spiel wurde gestartet! Ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${messageInformation.title})`);
+            }
+        }
+    }
 
     const userCount = parseInt(message.content, 10);
     const mode = await getMode(channel.id); // Aktuellen Modus abrufen
