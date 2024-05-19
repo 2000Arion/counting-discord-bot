@@ -72,3 +72,4 @@ module.exports = {
     resetCount,
     getTarget
 };
+
