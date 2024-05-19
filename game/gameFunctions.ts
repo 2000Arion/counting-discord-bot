@@ -53,6 +53,15 @@ async function updateCount(newCount: number, senderId: string, channelId: string
     }
 }
 
+async function getLatestSender(channelId: string) {
+    const latestSender = await prisma.currentCount.findFirst({
+        where: {
+            id: channelId
+        }
+    });
+    return latestSender?.senderId ?? '';
+}
+
 async function getMode(channelId: string) {
     const gameMode = await prisma.currentCount.findUnique({
         where: {
@@ -97,5 +106,6 @@ export {
     getMode,
     resetCount,
     getGameData,
-    getTarget
+    getTarget,
+    getLatestSender
 };

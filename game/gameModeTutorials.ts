@@ -1,6 +1,6 @@
-function getModeTutorial(mode) {
-    let tutorialTitle;
-    let tutorialDescription;
+function getModeTutorial(mode: string) {
+    let tutorialTitle: string;
+    let tutorialDescription: string;
 
     if (mode === 'all') {
         tutorialTitle = 'Positive Zahlen';
@@ -20,9 +20,7 @@ function getModeTutorial(mode) {
         tutorialDescription = 'Bitte überprüfe den ausgewählten Modus.';
     }
 
-    return [tutorialTitle, tutorialDescription];
+    return { title: tutorialTitle, description: tutorialDescription };
 }
 
-module.exports = {
-    getModeTutorial
-}
+export default getModeTutorial;

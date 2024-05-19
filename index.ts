@@ -4,6 +4,8 @@
 import { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, PermissionsBitField } from 'discord.js';
 require('dotenv').config();
 
+import getModeTutorial from './game/gameModeTutorials';
+
 import assertEnv from './helper/envAsserter';
 
 import { getLatestCount, updateCount, getMode, resetCount, getTarget, getGameData } from './game/gameFunctions';
@@ -40,31 +42,6 @@ client.on('ready', () => {
 function getRandomMode() {
     const modes = ['all', 'positive_odd', 'positive_even', 'negative'];
     return modes[Math.floor(Math.random() * modes.length)];
-}
-
-function getModeTutorial(mode: string) {
-    let tutorialTitle: string;
-    let tutorialDescription: string;
-
-    if (mode === 'all') {
-        tutorialTitle = 'Positive Zahlen';
-        tutorialDescription = 'Zähle einfach aufwärts von eins an: `1`, `2`, `3`, `4`, ...';
-    } else if (mode === 'positive_odd') {
-        tutorialTitle = 'Ungerade Zahlen';
-        tutorialDescription = 'Zähle nur die ungeraden Zahlen: `1`, `3`, `5`, `7`, ...';
-    } else if (mode === 'positive_even') {
-        tutorialTitle = 'Gerade Zahlen';
-        tutorialDescription = 'Zähle nur die geraden Zahlen: `2`, `4`, `6`, `8`, ...';
-    } else if (mode === 'negative') {
-        tutorialTitle = 'Negative Zahlen';
-        tutorialDescription = 'Zähle abwärts von null: `-1`, `-2`, `-3`, `-4`, ...';
-    } else {
-        // Wenn der Modus unbekannt ist, Standardwerte setzen
-        tutorialTitle = 'Modus nicht gefunden';
-        tutorialDescription = 'Bitte überprüfe den ausgewählten Modus.';
-    }
-
-    return { title: tutorialTitle, description: tutorialDescription };
 }
 
 client.on('messageCreate', async (message) => {
