@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, EmbedBuilder } from 'discord.js';
 require('dotenv').config();
+import i18n from './i18nConfig';
 
 import getModeTutorial from './game/gameModeTutorials';
 import tutorialButton from './builders/ButtonBuilder';
@@ -10,13 +11,16 @@ import { getLatestCount, updateCount, getMode, resetCount, getTarget, getGameDat
 
 assertEnv();
 
-console.log('Loading...');
+const LANG = process.env.LANG || 'en';
+i18n.locale = LANG;
+
+console.log(i18n.t('loading'));
 
 const PREFIX = process.env.PREFIX;
 
 if (!PREFIX) {
-    console.log('Error: Prefix is not defined');
-    process.exit(1); // Beendet das Programm, wenn der Präfix nicht definiert ist
+    console.log(i18n.t('error_prefix_not_defined'));
+    process.exit(1);
 }
 
 const client = new Client({
@@ -29,29 +33,29 @@ const client = new Client({
 
 client.on('ready', () => {
     if (!client.user) {
-        console.log('Error: Client user is not defined');
-        process.exit(1); // Beendet das Programm, wenn der Benutzer nicht definiert ist
+        console.log(i18n.t('error_client_user_not_defined'));
+        process.exit(1);
     }
-    client.user.setPresence({ activities: [{ name: 'in den Counting-Kanal', type: ActivityType.Watching }], status: PresenceUpdateStatus.Online });
-    console.log(`Logged in as ${client.user.tag}`);
+    client.user.setPresence({ activities: [{ name: i18n.t('presence_activity'), type: ActivityType.Watching }], status: PresenceUpdateStatus.Online });
+    console.log(i18n.t('logged_in_as', { user_tag: client.user.tag }));
 });
 
-// Funktion, um einen zufälligen Modus auszuwählen
 function getRandomMode() {
     const modes = ['all', 'positive_odd', 'positive_even', 'negative'];
     return modes[Math.floor(Math.random() * modes.length)];
 }
 
 client.on('messageCreate', async (message) => {
-    if (!message) return; // wenn keine Nachricht vorhanden ist, beenden
-    if (!message.channel) return; // wenn die Nachricht in keinem Kanal geschrieben wurde, beenden
-    if (!message.guild) return; // wenn die Nachricht in keinem Server geschrieben wurde, beenden (z. B. DMs)
-    if (message.author.bot) return; // wenn der Autor der Nachricht ein Bot ist, beenden
-    const channel = message.channel; // Kanal, in dem die Nachricht gesendet wurde
-    const guild = message.guild; // Server, in dem die Nachricht gesendet wurde
+    if (!message) return;
+    if (!message.channel) return;
+    if (!message.guild) return;
+    if (message.author.bot) return;
 
-    if (!channel.id) return; // wenn keine Kanal-ID vorhanden ist, beenden
-    if (!guild.id) return; // wenn keine Server-ID vorhanden ist, beenden
+    const channel = message.channel;
+    const guild = message.guild;
+
+    if (!channel.id) return;
+    if (!guild.id) return;
 
     if (message.content.startsWith(PREFIX)) {
         if (message.content === `${PREFIX}reset`) {
@@ -64,7 +68,7 @@ client.on('messageCreate', async (message) => {
             if (!member) return;
 
             if (!member.permissions.has([PermissionsBitField.Flags.KickMembers])) {
-                await message.channel.send('Du hast nicht die Berechtigung, den Zähler zurückzusetzen.');
+                await message.channel.send(i18n.t('no_permission_reset'));
                 return;
             }
 
@@ -72,9 +76,9 @@ client.on('messageCreate', async (message) => {
             const messageInformation = getModeTutorial(mode);
             await resetCount(mode, channel.id);
             const target = await getTarget(channel.id);
-            await message.react('🔄')
+            await message.react('🔄');
             if (target) {
-                await message.channel.send(`Der Zähler wurde zurückgesetzt. In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`);
+                await message.channel.send(i18n.t('counter_reset', { target, mode_title: messageInformation.title }));
             }
             return;
         }
@@ -89,7 +93,7 @@ client.on('messageCreate', async (message) => {
             if (!member) return;
 
             if (!member.permissions.has([PermissionsBitField.Flags.KickMembers])) {
-                await message.channel.send('Du hast nicht die Berechtigung, das Spiel zu starten.');
+                await message.channel.send(i18n.t('no_permission_start'));
                 return;
             }
 
@@ -98,7 +102,7 @@ client.on('messageCreate', async (message) => {
             const messageInformation = getModeTutorial(mode);
             await message.react('🎉');
             if (target) {
-                await message.channel.send(`Das Spiel wurde gestartet! Ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${messageInformation.title})`);
+                await message.channel.send(i18n.t('game_started', { target, mode_title: messageInformation.title }));
             }
             return;
         }
@@ -109,15 +113,15 @@ client.on('messageCreate', async (message) => {
     if (!game) return;
 
     const userCount = parseInt(message.content, 10);
-    const mode = await getMode(channel.id); // Aktuellen Modus abrufen
+    const mode = await getMode(channel.id);
 
     const lastCounter = await getLatestSender(channel.id);
     if (lastCounter === message.author.id) {
         await message.react('❌');
-        const button = tutorialButton.setCustomId(mode)
+        const button = tutorialButton.setCustomId(mode);
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
         await message.channel.send({
-            content: 'Du kannst nicht zweimal hintereinander zählen!',
+            content: i18n.t('cannot_count_twice'),
             components: [row]
         });
         return;
@@ -129,11 +133,11 @@ client.on('messageCreate', async (message) => {
         await resetCount(mode, channel.id);
         const target = await getTarget(channel.id);
         await message.react('❌');
-        const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-        const button = tutorialButton.setCustomId(mode)
+        const resetMessage = mode === 'negative' ? i18n.t('reset_message_negative') : i18n.t('reset_message_positive');
+        const button = tutorialButton.setCustomId(mode);
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
         await message.channel.send({
-            content: `Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`,
+            content: i18n.t('not_a_number', { reset_message: resetMessage, target, mode_title: messageInformation.title }),
             components: [row]
         });
         return;
@@ -141,20 +145,19 @@ client.on('messageCreate', async (message) => {
 
     const latestCount = await getLatestCount(channel.id);
 
-    // Überprüfen, ob die eingegebene Zahl basierend auf dem aktuellen Modus korrekt ist
     let expectedCount;
     if (mode === 'positive_odd') {
         if (latestCount === 0) {
-            expectedCount = 1; // Start mit 1, da 0 keine ungerade Zahl ist
+            expectedCount = 1;
         } else {
-            expectedCount = latestCount + 2; // Nächstes erwartetes ungerades Zahl
+            expectedCount = latestCount + 2;
         }
     } else if (mode === 'positive_even') {
-        expectedCount = latestCount + 2; // Nächstes erwartetes gerade Zahl
+        expectedCount = latestCount + 2;
     } else if (mode === 'negative') {
-        expectedCount = latestCount - 1; // Nächstes erwartetes negative Zahl
+        expectedCount = latestCount - 1;
     } else {
-        expectedCount = latestCount + 1; // Nächstes erwartetes Zahl im Standardmodus
+        expectedCount = latestCount + 1;
     }
 
     if (userCount === expectedCount) {
@@ -166,11 +169,11 @@ client.on('messageCreate', async (message) => {
             await resetCount(mode, channel.id);
             await message.react('🎉');
             let target = await getTarget(channel.id);
-            const resetMessage = mode === 'negative' ? 'Das Spiel beginnt jetzt wieder bei -1' : 'Das Spiel beginnt jetzt wieder bei 1';
-            const button = tutorialButton.setCustomId(mode)
+            const resetMessage = mode === 'negative' ? i18n.t('reset_message_negative') : i18n.t('reset_message_positive');
+            const button = tutorialButton.setCustomId(mode);
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
             await message.channel.send({
-                content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${messageInformation.title})`,
+                content: i18n.t('goal_reached', { reset_message: resetMessage, target, mode_title: messageInformation.title }),
                 components: [row]
             });
         } else {
@@ -180,13 +183,13 @@ client.on('messageCreate', async (message) => {
         const mode = getRandomMode();
         const messageInformation = getModeTutorial(mode);
         await resetCount(mode, channel.id);
-        let target = await getTarget(channel.id); // Ziel nach dem Zurücksetzen aktualisieren
+        let target = await getTarget(channel.id);
         await message.react('❌');
-        const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-        const button = tutorialButton.setCustomId(mode)
+        const resetMessage = mode === 'negative' ? i18n.t('reset_message_negative') : i18n.t('reset_message_positive');
+        const button = tutorialButton.setCustomId(mode);
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
         await message.channel.send({
-            content: `Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${messageInformation.title})`,
+            content: i18n.t('wrong_number', { reset_message: resetMessage, target, mode_title: messageInformation.title }),
             components: [row]
         });
     }
@@ -207,22 +210,20 @@ client.on('interactionCreate', async interaction => {
 
             const embed = new EmbedBuilder()
                 .setColor(0x31985)
-                .setTitle("Erklärung")
+                .setTitle(i18n.t('explanation_title'))
                 .setDescription(messageInformation.description);
 
             await interaction.reply({ embeds: [embed], ephemeral: true });
             break;
 
-        // Add more cases for other buttons if needed
         default:
             console.log(`Unhandled button click with customId: ${customId}`);
     }
 });
 
-
 client.login(process.env.TOKEN).then(() => {
-    console.log('Bot is running!'); // Wenn erfolgreich eingeloggt, 'Bot is running!' ausgeben
+    console.log(i18n.t('bot_running'));
 }).catch(error => {
     console.error('Error initializing the database:', error);
-    process.exit(1); // Beendet das Programm bei einem Initialisierungsfehler
+    process.exit(1);
 });

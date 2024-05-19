@@ -1,0 +1,42 @@
+{
+    "loading": "Wird geladen...",
+    "error_prefix_not_defined": "Fehler: Präfix ist nicht definiert",
+    "error_client_user_not_defined": "Fehler: Client-Benutzer ist nicht definiert",
+    "presence_activity": "im Zählkanal",
+    "logged_in_as": "Angemeldet als {{user_tag}}",
+    "no_permission_reset": "Du hast keine Berechtigung, den Zähler zurückzusetzen.",
+    "counter_reset": "Der Zähler wurde zurückgesetzt. In dieser Runde musst du bis **{{target}}** zählen. (Modus: {{mode_title}})",
+    "no_permission_start": "Du hast keine Berechtigung, das Spiel zu starten.",
+    "game_started": "Das Spiel hat begonnen! Du musst bis **{{target}}** zählen. Viel Glück! (Modus: {{mode_title}})",
+    "cannot_count_twice": "Du kannst nicht zweimal hintereinander zählen!",
+    "not_a_number": "Das ist keine Zahl! {{reset_message}} In dieser Runde musst du bis **{{target}}** zählen. (Modus: {{mode_title}})",
+    "reset_message_negative": "Das Spiel beginnt wieder bei -1.",
+    "reset_message_positive": "Das Spiel beginnt wieder bei 1.",
+    "goal_reached": "🎉 Glückwunsch! Das Ziel wurde erreicht.\n{{reset_message}} und du musst bis **{{target}}** zählen. Viel Glück! (Modus: {{mode_title}})",
+    "wrong_number": "Falsche Zahl! {{reset_message}} In dieser Runde musst du bis **{{target}}** zählen. (Modus: {{mode_title}})",
+    "explanation_title": "Erklärung",
+    "bot_running": "Bot läuft!",
+    "database_url_not_set": "DATABASE_URL nicht gesetzt. Bitte füge deine Datenbank-URL in die .env-Datei ein. Diese URL sollte ein Verbindungsstring zu deiner Datenbank sein.\nWenn du nicht weißt, was das ist, lies bitte diese Dokumentation: https://www.prisma.io/docs/concepts/database-connectors/mysql#connection-url\nWenn du einen anderen Datenbankanbieter verwenden möchtest (z.B. SQLite, PostgreSQL usw.), ändere bitte das 'provider'-Feld in der 'schema.prisma'-Datei entsprechend.",
+    "token_not_set": "TOKEN nicht gesetzt. Bitte füge dein Bot-Token in die .env-Datei ein. Dieses Token wird benötigt, um deinen Bot bei Discord zu authentifizieren.\nWenn du noch kein Bot-Token hast, lies bitte diese Dokumentation: https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot\nWenn du ein Bot-Token hast, füge es bitte in die .env-Datei ein.",
+    "prefix_not_set": "PREFIX nicht gesetzt. Bitte füge dein gewünschtes Präfix in die .env-Datei ein. Dieses Präfix wird verwendet, um Befehle für deinen Bot zu identifizieren.\nWenn du nicht weißt, was ein Präfix ist: Es ist ein Zeichen, das vor einem Befehl steht, um dem Bot mitzuteilen, dass es sich um einen Befehl handelt.\nZum Beispiel, wenn du dein Präfix auf '!' setzt, würdest du Befehle wie '!help' oder '!ping' verwenden.\nBitte füge dein gewünschtes Präfix in die .env-Datei ein.",
+    "positive_numbers": {
+        "title": "Positive Zahlen",
+        "description": "Zähle einfach ab 1 hoch: `1`, `2`, `3`, `4`, `5`, …"
+    },
+    "positive_odd_numbers": {
+        "title": "Ungerade positive Zahlen",
+        "description": "Zähle ab 1 hoch, aber nur die ungeraden Zahlen: `1`, `3`, `5`, `7`, `9`, …"
+    },
+    "positive_even_numbers": {
+        "title": "Gerade positive Zahlen",
+        "description": "Zähle ab 2 hoch, aber nur die geraden Zahlen: `2`, `4`, `6`, `8`, `10`, …"
+    },
+    "negative_numbers": {
+        "title": "Negative Zahlen",
+        "description": "Zähle ab -1 herunter: `-1`, `-2`, `-3`, `-4`, `-5`, …"
+    },
+    "mode_not_found": {
+        "title": "Modus nicht gefunden",
+        "description": "bitte versuche es erneut."
+    }
+}
