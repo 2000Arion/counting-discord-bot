@@ -14,7 +14,7 @@ model CurrentCount {
   id       String @id
   number   Int    @default(0)
   senderId String
-  target  Int
+  target   Int
   mode     String
 }
 
@@ -22,4 +22,24 @@ enum gameModes {
   positive_odd
   positive_even
   negative
+}
+
+model countStat {
+  id            String          @id
+  positiveOdd   Int             @default(0)
+  positiveEven  Int             @default(0)
+  negative      Int             @default(0)
+  all           Int             @default(0)
+  userCountStat userCountStat[]
+}
+
+model userCountStat {
+  id           String    @id @default(uuid())
+  userId       String
+  countStatId  String
+  countStat    countStat @relation(fields: [countStatId], references: [id])
+  positiveOdd  Int       @default(0)
+  positiveEven Int       @default(0)
+  negative     Int       @default(0)
+  all          Int       @default(0)
 }

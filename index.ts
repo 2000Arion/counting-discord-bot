@@ -7,7 +7,7 @@ import tutorialButton from './builders/ButtonBuilder';
 
 import assertEnv from './helper/envAsserter';
 
-import { getLatestCount, updateCount, getMode, resetCount, getTarget, getGameData, getLatestSender } from './game/gameFunctions';
+import { getLatestCount, updateCount, getMode, resetCount, getTarget, getGameData, getLatestSender, addCountingStats } from './game/gameFunctions';
 
 assertEnv();
 
@@ -163,6 +163,7 @@ client.on('messageCreate', async (message) => {
     if (userCount === expectedCount) {
         let target = await getTarget(channel.id);
         await updateCount(userCount, message.author.id, channel.id);
+        await addCountingStats(channel.id, message.author.id);
         if (userCount === target) {
             const mode = getRandomMode();
             const messageInformation = getModeTutorial(mode);
