@@ -201,6 +201,18 @@ async function resetCount(mode: string, channelId: string) {
     });
 }
 
+async function getCountStats(channelId: string) {
+    const stats = await prisma.countStat.findUnique({
+        where: {
+            id: channelId,
+        },
+        include: {
+            userCountStat: true
+        }
+    });
+    return stats;
+}
+
 async function getTarget(channelId: string) {
     const target = await prisma.currentCount.findUnique({
         where: {
@@ -221,4 +233,5 @@ export {
     getLatestSender,
     addCountingStats,
     removeChannel,
+    getCountStats,
 };

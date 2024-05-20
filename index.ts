@@ -24,6 +24,7 @@ import {
     getGameData,
     getLatestSender, addCountingStats,
     removeChannel,
+    getCountStats,
 } from "./game/gameFunctions";
 
 assertEnv();
@@ -156,6 +157,50 @@ client.on("messageCreate", async (message) => {
             await removeChannel(channel.id);
             await message.react("🛑");
             await message.channel.send(i18n.t("game_ended"));
+            return;
+        }
+
+        if (message.content === `${PREFIX}stats`) {
+            const stats = await getCountStats(channel.id);
+            if (!stats) {
+                await message.channel.send(i18n.t("no_stats"));
+                return;
+            }
+
+            const userStats = stats.userCountStat;
+            if (!userStats) {
+                await message.channel.send(i18n.t("no_stats"));
+                return;
+            }
+
+            const embed = new EmbedBuilder()
+                .setColor(0x31985)
+
+            if (userStats.length > 0) {
+                let userStatsString = "";
+
+                userStatsString += "↳" + i18n.t("stats_positive", { count: stats.all }) + "\n";
+                userStatsString += "↳" + i18n.t("stats_positive_odd", { count: stats.positiveOdd }) + "\n";
+                userStatsString += "↳" + i18n.t("stats_positive_even", { count: stats.positiveEven }) + "\n";
+                userStatsString += "↳" + i18n.t("stats_negative", { count: stats.negative }) + "\n\n";
+
+                userStats.forEach((userStat) => {
+                    userStatsString += `<@${userStat.userId}>: \n`;
+                    userStatsString += "↳" + i18n.t("stats_positive", { count: userStat.all }) + "\n";
+                    userStatsString += "↳" + i18n.t("stats_positive_odd", { count: userStat.positiveOdd }) + "\n";
+                    userStatsString += "↳" + i18n.t("stats_positive_even", { count: userStat.positiveEven }) + "\n";
+                    userStatsString += "↳" + i18n.t("stats_negative", { count: userStat.negative }) + "\n" ;
+                    userStatsString += "\n";
+                });
+
+                embed.setTitle(i18n.t("stats_title"))
+                    .setDescription(userStatsString)
+            } else {
+                embed.setTitle(i18n.t("stats_title"))
+                    .setDescription(i18n.t("no_stats"))
+            }
+            await message.channel.send({ embeds: [embed] });
+            //TODO: Weg finden dass embed beschreibung maximale länge (4000) nicht überschreitet wenn zu viele nutzer
             return;
         }
     }
