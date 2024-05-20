@@ -38,5 +38,7 @@
   "mode_not_found": {
     "title": "Modus nicht gefunden",
     "description": "bitte versuche es erneut."
-  }
+  },
+  "game_ended": "Das Spiel wurde beendet. Dieser Kanal ist nun wieder ein normaler Textkanal. Vielen Dank fürs Spielen! 🎉",
+  "no_permission_end": "Du hast keine Berechtigung, das Spiel zu beenden."
 }

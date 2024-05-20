@@ -23,6 +23,7 @@ import {
     getTarget,
     getGameData,
     getLatestSender, addCountingStats,
+    removeChannel,
 } from "./game/gameFunctions";
 
 assertEnv();
@@ -135,6 +136,26 @@ client.on("messageCreate", async (message) => {
                     })
                 );
             }
+            return;
+        }
+
+        if (message.content === `${PREFIX}end`) {
+            const author = message.author;
+            if (!author) return;
+            if (!author.id) return;
+
+            const member = guild.members.cache.get(author.id);
+
+            if (!member) return;
+
+            if (!member.permissions.has([PermissionsBitField.Flags.KickMembers])) {
+                await message.channel.send(i18n.t("no_permission_end"));
+                return;
+            }
+
+            await removeChannel(channel.id);
+            await message.react("🛑");
+            await message.channel.send(i18n.t("game_ended"));
             return;
         }
     }
