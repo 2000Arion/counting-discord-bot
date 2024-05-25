@@ -29,7 +29,7 @@ function getRandomMode() {
 }
 
 client.on('messageCreate', async (message) => {
-    if (message.channel.id === '1241721012500959264' && message.guild.id === '831161440705839124') {
+    if (message.channel.id === process.env.COUNTING_CHANNEL_ID && message.guild.id === process.env.COUNTING_GUILD_ID) {
         if (message.author.bot) return;
 
         const userCount = parseInt(message.content, 10);
