@@ -23,6 +23,18 @@ function getModeTutorial(mode) {
     } else if (mode === 'hundreds') {
         tutorialTitle = 'Hunderter';
         tutorialDescription = 'Zähle nur die Hunderterzahlen: `100`, `200`, `300`, `400`, ...';
+    } else if (mode === 'multiples_3') {
+        tutorialTitle = 'Vielfache von 3';
+        tutorialDescription = 'Zähle nur Vielfache von 3: `3`, `6`, `9`, `12`, ...';
+    } else if (mode === 'multiples_4') {
+        tutorialTitle = 'Vielfache von 4';
+        tutorialDescription = 'Zähle nur Vielfache von 4: `4`, `8`, `12`, `16`, ...';
+    } else if (mode === 'negative_100_to_0') {
+        tutorialTitle = 'Von -100 bis 0';
+        tutorialDescription = 'Zähle aufwärts von -100: `-100`, `-99`, `-98`, `-97`, ...';
+    } else if (mode === 'prime') {
+        tutorialTitle = 'Primzahlen';
+        tutorialDescription = 'Zähle nur die Primzahlen: `2`, `3`, `5`, `7`, ...\n\n> **[Weitere Hilfe](https://media.arion2000.xyz/cdn/_uploads/html/source=018f9352-41c4-74cb-ad74-25f50db6578c/#/prime)**'
     } else {
         // Wenn der Modus unbekannt ist, Standardwerte setzen
         tutorialTitle = 'Modus nicht gefunden';

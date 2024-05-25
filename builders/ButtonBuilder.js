@@ -1,29 +1,18 @@
-// Wird aktuell nicht verwendet!
-
 const { ButtonBuilder, ButtonStyle } = require('discord.js');
 
-const tutorialButton_all = new ButtonBuilder()
-    .setCustomId('all')
-    .setLabel('Erklärung')
-    .setStyle(ButtonStyle.Secondary) // Grauer Button
-    .setEmoji('❔');
+const tutorialButton_prime = new ButtonBuilder()
+    .setLabel('Weitere Hilfe')
+    .setURL('https://media.arion2000.xyz/cdn/_uploads/html/source=018f9352-41c4-74cb-ad74-25f50db6578c/#/prime')
+    .setStyle(ButtonStyle.Link)
 
-const tutorialButton_positive_odd = new ButtonBuilder()
-    .setCustomId('positive_odd')
-    .setLabel('Erklärung')
-    .setStyle(ButtonStyle.Secondary) // Grauer Button
-    .setEmoji('❔');
+const tutorialButton_roman = new ButtonBuilder()
+    .setLabel('Weitere Hilfe')
+    .setURL('https://media.arion2000.xyz/cdn/_uploads/html/source=018f9352-41c4-74cb-ad74-25f50db6578c/#/roman')
+    .setStyle(ButtonStyle.Link)
 
-const tutorialButton_positive_even = new ButtonBuilder()
-    .setCustomId('positive_even')
-    .setLabel('Erklärung')
-    .setStyle(ButtonStyle.Secondary) // Grauer Button
-    .setEmoji('❔');
+const tutorialButton_binary = new ButtonBuilder()
+    .setLabel('Weitere Hilfe')
+    .setURL('https://media.arion2000.xyz/cdn/_uploads/html/source=018f9352-41c4-74cb-ad74-25f50db6578c/#/binary')
+    .setStyle(ButtonStyle.Link)
 
-const tutorialButton_negative = new ButtonBuilder()
-    .setCustomId('negative')
-    .setLabel('Erklärung')
-    .setStyle(ButtonStyle.Secondary) // Grauer Button
-    .setEmoji('❔');
-
-module.exports = { tutorialButton_all, tutorialButton_positive_odd, tutorialButton_positive_even, tutorialButton_negative };
+module.exports = { tutorialButton_prime, tutorialButton_roman, tutorialButton_binary };

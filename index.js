@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const { initializeDatabase, getLatestCount, getLatestSender, updateCount, getMode, resetCount, getTarget } = require('./game/gameFunctions');
 const { getModeTutorial } = require('./game/gameModeTutorials');
+const { tutorialButton_prime, tutorialButton_roman, tutorialButton_binary } = require('./builders/ButtonBuilder');
 
 console.log('Loading...');
 
@@ -24,7 +25,7 @@ client.on('ready', () => {
 
 // Funktion, um einen zufälligen Modus auszuwählen
 function getRandomMode() {
-    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds'];
+    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds', 'multiples_3', 'multiples_4', 'negative_100_to_0', 'prime'];
     return modes[Math.floor(Math.random() * modes.length)];
 }
 
@@ -44,6 +45,9 @@ client.on('messageCreate', async (message) => {
 
             let resetMessage;
             switch (mode) {
+                case 'positive_even':
+                    resetMessage = 'Das Spiel beginnt wieder bei 2.';
+                    break;
                 case 'negative':
                     resetMessage = 'Das Spiel beginnt wieder bei -1.';
                     break;
@@ -55,6 +59,18 @@ client.on('messageCreate', async (message) => {
                     break;
                 case 'hundreds':
                     resetMessage = 'Das Spiel beginnt wieder bei 100.';
+                    break;
+                case 'multiples_3':
+                    resetMessage = 'Das Spiel beginnt wieder bei 3.';
+                    break;
+                case 'multiples_4':
+                    resetMessage = 'Das Spiel beginnt wieder bei 4.';
+                    break;
+                case 'negative_100_to_0':
+                    resetMessage = 'Das Spiel beginnt wieder bei -100.';
+                    break;
+                case 'prime':
+                    resetMessage = 'Das Spiel beginnt wieder bei 2.';
                     break;
                 default:
                     resetMessage = 'Das Spiel beginnt wieder bei 1.';
@@ -84,7 +100,7 @@ client.on('messageCreate', async (message) => {
             if (latestCount === 0) {
                 expectedCount = 1; // Start mit 1
             } else {
-                expectedCount = latestCount + 2; // Nächste erwartete ungerades Zahl
+                expectedCount = latestCount + 2; // Nächste erwartete ungerade Zahl
             }
         } else if (mode === 'positive_even') {
             expectedCount = latestCount + 2; // Nächste erwartete gerade Zahl
@@ -107,6 +123,43 @@ client.on('messageCreate', async (message) => {
                 expectedCount = 100; // Start mit 100
             } else {
                 expectedCount = latestCount + 100; // Nächste erwartete Hunderterzahl
+            }
+        } else if (mode === 'multiples_3') {
+            if (latestCount === 0) {
+                expectedCount = 3; // Start mit 3
+            } else {
+                expectedCount = latestCount + 3; // Nächstes erwartetes Vielfaches von 3
+            }
+        } else if (mode === 'multiples_4') {
+            if (latestCount === 0) {
+                expectedCount = 4; // Start mit 4
+            } else {
+                expectedCount = latestCount + 4; // Nächstes erwartetes Vielfaches von 4
+            }
+        } else if (mode === 'negative_100_to_0') {
+            if (latestCount === 0) {
+                expectedCount = -100; // Start mit -100
+            } else {
+                expectedCount = latestCount + 1; // Nächste erwartete Zahl von -100 zu 0
+            }
+        } else if (mode === 'prime') {
+            if (latestCount <= 1) {
+                expectedCount = 2; // Start mit 2
+            } else {
+                // Funktion, um die nächste Primzahl nach latestCount zu finden
+                let isPrime = false;
+                let candidate = latestCount + 1;
+                while (!isPrime) {
+                    isPrime = true;
+                    for (let i = 2; i <= Math.sqrt(candidate); i++) {
+                        if (candidate % i === 0) {
+                            isPrime = false;
+                            break;
+                        }
+                    }
+                    if (!isPrime) candidate++;
+                }
+                expectedCount = candidate;
             }
         } else {
             expectedCount = latestCount + 1; // Nächste erwartete Zahl im Standardmodus
@@ -132,6 +185,18 @@ client.on('messageCreate', async (message) => {
                     break;
                 case 'hundreds':
                     resetMessage = 'Das Spiel beginnt wieder bei 100.';
+                    break;
+                case 'multiples_3':
+                    resetMessage = 'Das Spiel beginnt wieder bei 3.';
+                    break;
+                case 'multiples_4':
+                    resetMessage = 'Das Spiel beginnt wieder bei 4.';
+                    break;
+                case 'negative_100_to_0':
+                    resetMessage = 'Das Spiel beginnt wieder bei -100.';
+                    break;
+                case 'prime':
+                    resetMessage = 'Das Spiel beginnt wieder bei 2.';
                     break;
                 default:
                     resetMessage = 'Das Spiel beginnt wieder bei 1.';
@@ -172,6 +237,18 @@ client.on('messageCreate', async (message) => {
                     case 'hundreds':
                         resetMessage = 'Das Spiel beginnt wieder bei 100.';
                         break;
+                    case 'multiples_3':
+                        resetMessage = 'Das Spiel beginnt wieder bei 3.';
+                        break;
+                    case 'multiples_4':
+                        resetMessage = 'Das Spiel beginnt wieder bei 4.';
+                        break;
+                    case 'negative_100_to_0':
+                        resetMessage = 'Das Spiel beginnt wieder bei -100.';
+                        break;
+                    case 'prime':
+                        resetMessage = 'Das Spiel beginnt wieder bei 2.';
+                        break;
                     default:
                         resetMessage = 'Das Spiel beginnt wieder bei 1.';
                         break;
@@ -209,6 +286,18 @@ client.on('messageCreate', async (message) => {
                     break;
                 case 'hundreds':
                     resetMessage = 'Das Spiel beginnt wieder bei 100.';
+                    break;
+                case 'multiples_3':
+                    resetMessage = 'Das Spiel beginnt wieder bei 3.';
+                    break;
+                case 'multiples_4':
+                    resetMessage = 'Das Spiel beginnt wieder bei 4.';
+                    break;
+                case 'negative_100_to_0':
+                    resetMessage = 'Das Spiel beginnt wieder bei -100.';
+                    break;
+                case 'prime':
+                    resetMessage = 'Das Spiel beginnt wieder bei 2.';
                     break;
                 default:
                     resetMessage = 'Das Spiel beginnt wieder bei 1.';
