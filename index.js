@@ -25,7 +25,7 @@ client.on('ready', () => {
 
 // Funktion, um einen zufälligen Modus auszuwählen
 function getRandomMode() {
-    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds', 'multiples_3', 'multiples_4', 'negative_100_to_0', 'prime'];
+    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds', 'multiples_3', 'multiples_4', 'negative_100_to_0', 'prime', 'binary'];
     return modes[Math.floor(Math.random() * modes.length)];
 }
 
@@ -160,6 +160,16 @@ client.on('messageCreate', async (message) => {
                     if (!isPrime) candidate++;
                 }
                 expectedCount = candidate;
+            }
+        } else if (mode === 'binary') {
+            // Umwandlung von latestCount in eine Binärzahl
+            let binaryCount = parseInt(latestCount, 2);
+
+            // Berechnung der nächsten erwarteten binären Zahl
+            if (binaryCount === 0) {
+                expectedCount = '1'; // Start mit '1'
+            } else {
+                expectedCount = (binaryCount * 2).toString(2); // Nächste erwartete Binärzahl
             }
         } else {
             expectedCount = latestCount + 1; // Nächste erwartete Zahl im Standardmodus

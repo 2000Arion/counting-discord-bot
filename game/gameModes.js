@@ -44,6 +44,14 @@ function generateTarget(mode) {
         } while (!isPrime(prime));
 
         return prime;
+    } else if (mode === 'binary') {
+        // Generiere eine zufällige Dezimalzahl zwischen 10 und 100
+        const randomNumber = Math.floor(Math.random() * 91) + 10;
+
+        // Konvertiere die Dezimalzahl in eine Binärzahl
+        const binaryNumber = randomNumber.toString(2);
+
+        return binaryNumber;
     } else {
         return Math.floor(Math.random() * (200 - 10 + 1)) + 10; // Zufällige positive Zahl zwischen 10 und 200
     }
