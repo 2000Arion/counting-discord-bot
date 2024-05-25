@@ -24,7 +24,7 @@ client.on('ready', () => {
 
 // Funktion, um einen zufälligen Modus auszuwählen
 function getRandomMode() {
-    const modes = ['all', 'positive_odd', 'positive_even', 'negative'];
+    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds'];
     return modes[Math.floor(Math.random() * modes.length)];
 }
 
@@ -42,7 +42,24 @@ client.on('messageCreate', async (message) => {
             const target = await getTarget();
             await message.react('❌');
 
-            const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
+            let resetMessage;
+            switch (mode) {
+                case 'negative':
+                    resetMessage = 'Das Spiel beginnt wieder bei -1.';
+                    break;
+                case 'tens':
+                    resetMessage = 'Das Spiel beginnt wieder bei 10.';
+                    break;
+                case 'fifties':
+                    resetMessage = 'Das Spiel beginnt wieder bei 50.';
+                    break;
+                case 'hundreds':
+                    resetMessage = 'Das Spiel beginnt wieder bei 100.';
+                    break;
+                default:
+                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
+                    break;
+            }
             const errorMessage = target ? `Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})` : `Das ist keine Zahl! ${resetMessage}`;
 
             await message.channel.send({
@@ -65,16 +82,34 @@ client.on('messageCreate', async (message) => {
         let expectedCount;
         if (mode === 'positive_odd') {
             if (latestCount === 0) {
-                expectedCount = 1; // Start mit 1, da 0 keine ungerade Zahl ist
+                expectedCount = 1; // Start mit 1
             } else {
-                expectedCount = latestCount + 2; // Nächstes erwartetes ungerades Zahl
+                expectedCount = latestCount + 2; // Nächste erwartete ungerades Zahl
             }
         } else if (mode === 'positive_even') {
-            expectedCount = latestCount + 2; // Nächstes erwartetes gerade Zahl
+            expectedCount = latestCount + 2; // Nächste erwartete gerade Zahl
         } else if (mode === 'negative') {
-            expectedCount = latestCount - 1; // Nächstes erwartetes negative Zahl
+            expectedCount = latestCount - 1; // Nächste erwartete negative Zahl
+        } else if (mode === 'tens') {
+            if (latestCount === 0) {
+                expectedCount = 10; // Start mit 10
+            } else {
+                expectedCount = latestCount + 10; // Nächste erwartete Zehnerzahl
+            }
+        } else if (mode === 'fifties') {
+            if (latestCount === 0) {
+                expectedCount = 50; // Start mit 50
+            } else {
+                expectedCount = latestCount + 50; // Nächste erwartete Fünftigerzahl
+            }
+        } else if (mode === 'hundreds') {
+            if (latestCount === 0) {
+                expectedCount = 100; // Start mit 100
+            } else {
+                expectedCount = latestCount + 100; // Nächste erwartete Hunderterzahl
+            }
         } else {
-            expectedCount = latestCount + 1; // Nächstes erwartetes Zahl im Standardmodus
+            expectedCount = latestCount + 1; // Nächste erwartete Zahl im Standardmodus
         }
 
         if (message.author.id == latestSender && process.env.DEV != "true") {
@@ -84,10 +119,27 @@ client.on('messageCreate', async (message) => {
             let target = await getTarget(); // Ziel nach dem Zurücksetzen aktualisieren
             await message.react('❌');
 
-            const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
-
+            let resetMessage;
+            switch (mode) {
+                case 'negative':
+                    resetMessage = 'Das Spiel beginnt wieder bei -1.';
+                    break;
+                case 'tens':
+                    resetMessage = 'Das Spiel beginnt wieder bei 10.';
+                    break;
+                case 'fifties':
+                    resetMessage = 'Das Spiel beginnt wieder bei 50.';
+                    break;
+                case 'hundreds':
+                    resetMessage = 'Das Spiel beginnt wieder bei 100.';
+                    break;
+                default:
+                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
+                    break;
+            }
+            const errorMessage = target ? `Du darfst nicht mehrmals hintereinander zählen! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})` : `Du darfst nicht mehrmals hintereinander zählen! ${resetMessage}`;
             await message.channel.send({
-                content: `Du darfst nicht mehrmals hintereinander zählen! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`,
+                content: errorMessage,
                 embeds: [
                     {
                         title: "Erklärung",
@@ -106,7 +158,24 @@ client.on('messageCreate', async (message) => {
                 await message.react('🎉');
                 let target = await getTarget();
 
-                const resetMessage = mode === 'negative' ? 'Das Spiel beginnt jetzt wieder bei -1' : 'Das Spiel beginnt jetzt wieder bei 1';
+                let resetMessage;
+                switch (mode) {
+                    case 'negative':
+                        resetMessage = 'Das Spiel beginnt wieder bei -1.';
+                        break;
+                    case 'tens':
+                        resetMessage = 'Das Spiel beginnt wieder bei 10.';
+                        break;
+                    case 'fifties':
+                        resetMessage = 'Das Spiel beginnt wieder bei 50.';
+                        break;
+                    case 'hundreds':
+                        resetMessage = 'Das Spiel beginnt wieder bei 100.';
+                        break;
+                    default:
+                        resetMessage = 'Das Spiel beginnt wieder bei 1.';
+                        break;
+                }
                 await message.channel.send({
                     content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
                     embeds: [
@@ -127,7 +196,24 @@ client.on('messageCreate', async (message) => {
             let target = await getTarget(); // Ziel nach dem Zurücksetzen aktualisieren
             await message.react('❌');
 
-            const resetMessage = mode === 'negative' ? 'Das Spiel beginnt wieder bei -1.' : 'Das Spiel beginnt wieder bei 1.';
+            let resetMessage;
+            switch (mode) {
+                case 'negative':
+                    resetMessage = 'Das Spiel beginnt wieder bei -1.';
+                    break;
+                case 'tens':
+                    resetMessage = 'Das Spiel beginnt wieder bei 10.';
+                    break;
+                case 'fifties':
+                    resetMessage = 'Das Spiel beginnt wieder bei 50.';
+                    break;
+                case 'hundreds':
+                    resetMessage = 'Das Spiel beginnt wieder bei 100.';
+                    break;
+                default:
+                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
+                    break;
+            }
             const errorMessage = target ? `Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})` : `Falsche Zahl! ${resetMessage}`;
 
             await message.channel.send({
@@ -141,7 +227,8 @@ client.on('messageCreate', async (message) => {
                 ],
             });
         }
-    }});
+    }
+});
 
 // Initialisiere die Datenbank und logge den Bot ein, wenn erfolgreich
 initializeDatabase().then(() => {
