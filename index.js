@@ -77,7 +77,7 @@ client.on('messageCreate', async (message) => {
             expectedCount = latestCount + 1; // Nächstes erwartetes Zahl im Standardmodus
         }
 
-        if (message.author.id == latestSender) {
+        if (message.author.id == latestSender && process.env.DEV != "true") {
             const mode = getRandomMode();
             const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
             await resetCount(mode);
