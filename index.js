@@ -1,12 +1,11 @@
 
-// TODO: Button für Erklärung
+// TODO: Fehler im Modus Binary beheben!
 
 const { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType } = require('discord.js');
 require('dotenv').config();
 
-const { initializeDatabase, getLatestCount, getLatestSender, updateCount, getMode, resetCount, getTarget } = require('./game/gameFunctions');
+const { initializeDatabase, getLatestCount, getLatestSender, updateCount, getMode, resetCount, getTarget, isValidBinary } = require('./game/gameFunctions');
 const { getModeTutorial } = require('./game/gameModeTutorials');
-const { tutorialButton_prime, tutorialButton_roman, tutorialButton_binary } = require('./builders/ButtonBuilder');
 
 console.log('Loading...');
 
@@ -25,7 +24,7 @@ client.on('ready', () => {
 
 // Funktion, um einen zufälligen Modus auszuwählen
 function getRandomMode() {
-    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds', 'multiples_3', 'multiples_4', 'negative_100_to_0', 'prime', 'binary'];
+    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds', 'multiples_3', 'multiples_4', 'negative_100_to_0', 'prime'];
     return modes[Math.floor(Math.random() * modes.length)];
 }
 
@@ -162,14 +161,13 @@ client.on('messageCreate', async (message) => {
                 expectedCount = candidate;
             }
         } else if (mode === 'binary') {
-            // Umwandlung von latestCount in eine Binärzahl
-            let binaryCount = parseInt(latestCount, 2);
+            let binaryCount = isValidBinary(latestCount) ? parseInt(latestCount, 2) : 0;
 
             // Berechnung der nächsten erwarteten binären Zahl
             if (binaryCount === 0) {
                 expectedCount = '1'; // Start mit '1'
             } else {
-                expectedCount = (binaryCount * 2).toString(2); // Nächste erwartete Binärzahl
+                expectedCount = (binaryCount + 1).toString(2); // Nächste erwartete Binärzahl
             }
         } else {
             expectedCount = latestCount + 1; // Nächste erwartete Zahl im Standardmodus

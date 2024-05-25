@@ -63,6 +63,12 @@ async function getTarget() {
     return rows.length > 0 ? rows[0].target : null;
 }
 
+async function isValidBinary(binaryString) {
+    // Überprüfen, ob latestCount eine gültige Binärzahl ist
+    return /^[01]+$/.test(binaryString);
+}
+
+
 module.exports = {
     initializeDatabase,
     getLatestCount,
@@ -70,5 +76,6 @@ module.exports = {
     updateCount,
     getMode,
     resetCount,
-    getTarget
+    getTarget,
+    isValidBinary
 };
