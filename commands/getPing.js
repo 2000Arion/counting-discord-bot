@@ -9,7 +9,7 @@ module.exports = async (interaction) => {
 
     // Erstelle das Embed
     const embed = new EmbedBuilder()
-        .setColor('#7FFF00') // Verwende Hexadezimalfarbe
+        .setColor('#007DF1') // Verwende Hexadezimalfarbe
         .setTitle('Pong!')
         .setDescription(`Ping: \`${ping}ms\``)
         .setTimestamp();

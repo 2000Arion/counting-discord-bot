@@ -1,7 +1,4 @@
-
-// TODO: Fehler im Modus Binary beheben!
-
-const { REST, Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, SlashCommandBuilder, Routes } = require('discord.js');
+const { REST, Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, SlashCommandBuilder, Routes, InteractionType } = require('discord.js');
 require('dotenv').config();
 
 const { initializeDatabase, getLatestCount, getLatestSender, updateCount, getMode, resetCount, getTarget, isValidBinary } = require('./game/gameFunctions');
@@ -43,12 +40,17 @@ const rest = new REST().setToken(process.env.TOKEN);
     }
 })();
 
-client.on('interaction', async (interaction) => {
-    if (interaction.type === InteractionTypes.APPLICATION_COMMAND) {
+client.on('interactionCreate', async (interaction) => {
+    if (interaction.type === InteractionType.ApplicationCommand) {
         const commandName = interaction.commandName;
 
         if (commandName === 'ping') {
-            await getPing(interaction); // Rufe die getPing-Funktion auf
+            try {
+                await getPing(interaction); // Rufe die getPing-Funktion auf
+            } catch (error) {
+                console.error('Error handling ping command:', error);
+                await interaction.reply({ content: 'Ein Fehler ist aufgetreten!', ephemeral: true });
+            }
         }
     }
 });
@@ -60,7 +62,7 @@ client.on('ready', () => {
 
 // Funktion, um einen zufälligen Modus auszuwählen
 function getRandomMode() {
-    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds', 'multiples_3', 'multiples_4', 'negative_100_to_0', 'prime'];
+    const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds', 'multiples_3', 'multiples_4', 'negative_100_to_0', 'prime', 'binary'];
     return modes[Math.floor(Math.random() * modes.length)];
 }
 
@@ -106,6 +108,9 @@ client.on('messageCreate', async (message) => {
                     break;
                 case 'prime':
                     resetMessage = 'Das Spiel beginnt wieder bei 2.';
+                    break;
+                case 'binary':
+                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
                     break;
                 default:
                     resetMessage = 'Das Spiel beginnt wieder bei 1.';
@@ -242,6 +247,9 @@ client.on('messageCreate', async (message) => {
                 case 'prime':
                     resetMessage = 'Das Spiel beginnt wieder bei 2.';
                     break;
+                case 'binary':
+                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
+                    break;
                 default:
                     resetMessage = 'Das Spiel beginnt wieder bei 1.';
                     break;
@@ -257,7 +265,7 @@ client.on('messageCreate', async (message) => {
                     }
                 ],
             });
-        } else if (userCount === expectedCount) {
+        } else if (userCount.toString() === expectedCount.toString()) {
             let target = await getTarget();
             await updateCount(userCount, message.author.id);
             if (userCount === target) {
@@ -292,6 +300,9 @@ client.on('messageCreate', async (message) => {
                         break;
                     case 'prime':
                         resetMessage = 'Das Spiel beginnt wieder bei 2.';
+                        break;
+                    case 'binary':
+                        resetMessage = 'Das Spiel beginnt wieder bei 1.';
                         break;
                     default:
                         resetMessage = 'Das Spiel beginnt wieder bei 1.';
@@ -342,6 +353,9 @@ client.on('messageCreate', async (message) => {
                     break;
                 case 'prime':
                     resetMessage = 'Das Spiel beginnt wieder bei 2.';
+                    break;
+                case 'binary':
+                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
                     break;
                 default:
                     resetMessage = 'Das Spiel beginnt wieder bei 1.';
