@@ -1,11 +1,12 @@
 
 // TODO: Fehler im Modus Binary beheben!
 
-const { Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType } = require('discord.js');
+const { REST, Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, SlashCommandBuilder, Routes } = require('discord.js');
 require('dotenv').config();
 
 const { initializeDatabase, getLatestCount, getLatestSender, updateCount, getMode, resetCount, getTarget, isValidBinary } = require('./game/gameFunctions');
 const { getModeTutorial } = require('./game/gameModeTutorials');
+const getPing = require('./commands/getPing');
 
 console.log('Loading...');
 
@@ -15,6 +16,41 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
     ],
+});
+
+const commands = [
+    new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Pong!')
+];
+
+const rest = new REST().setToken(process.env.TOKEN);
+
+(async () => {
+    try {
+        console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+        // The put method is used to fully refresh all commands in the guild with the current set
+        const data = await rest.put(
+            Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.COUNTING_GUILD_ID),
+            { body: commands },
+        );
+
+        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    } catch (error) {
+        // And of course, make sure you catch and log any errors!
+        console.error(error);
+    }
+})();
+
+client.on('interaction', async (interaction) => {
+    if (interaction.type === InteractionTypes.APPLICATION_COMMAND) {
+        const commandName = interaction.commandName;
+
+        if (commandName === 'ping') {
+            await getPing(interaction); // Rufe die getPing-Funktion auf
+        }
+    }
 });
 
 client.on('ready', () => {
