@@ -38,5 +38,13 @@
   "mode_not_found": {
     "title": "Modus nicht gefunden",
     "description": "bitte versuche es erneut."
-  }
+  },
+  "game_ended": "Das Spiel wurde beendet. Dieser Kanal ist nun wieder ein normaler Textkanal. Vielen Dank fürs Spielen! 🎉",
+  "no_permission_end": "Du hast keine Berechtigung, das Spiel zu beenden.",
+  "stats_title": "Statistiken",
+  "stats_positive": "Positiv: {{count}}",
+  "stats_positive_odd": "Ungerade positiv: {{count}}",
+  "stats_positive_even": "Gerade positiv: {{count}}",
+  "stats_negative": "Negativ: {{count}}",
+  "no_stats": "Keine Statistiken verfügbar."
 }

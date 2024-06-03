@@ -38,5 +38,13 @@
     "mode_not_found": {
         "title": "Mode not found",
         "description": "please try again."
-    }
+    },
+    "game_ended": "The game has ended. This channel is now a normal channel.",
+    "no_permission_end": "You do not have permission to end the game.",
+    "stats_title": "Stats",
+    "stats_positive": "Positive: {{count}}",
+    "stats_positive_odd": "Positive Odd: {{count}}",
+    "stats_positive_even": "Positive Even: {{count}}",
+    "stats_negative": "Negative: {{count}}",
+    "no_stats": "No stats available."
 }
