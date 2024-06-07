@@ -278,34 +278,34 @@ client.on('messageCreate', async (message) => {
                 let resetMessage;
                 switch (mode) {
                     case 'negative':
-                        resetMessage = 'Das Spiel beginnt wieder bei -1.';
+                        resetMessage = 'Das Spiel beginnt wieder bei -1';
                         break;
                     case 'tens':
-                        resetMessage = 'Das Spiel beginnt wieder bei 10.';
+                        resetMessage = 'Das Spiel beginnt wieder bei 10';
                         break;
                     case 'fifties':
-                        resetMessage = 'Das Spiel beginnt wieder bei 50.';
+                        resetMessage = 'Das Spiel beginnt wieder bei 50';
                         break;
                     case 'hundreds':
-                        resetMessage = 'Das Spiel beginnt wieder bei 100.';
+                        resetMessage = 'Das Spiel beginnt wieder bei 100';
                         break;
                     case 'multiples_3':
-                        resetMessage = 'Das Spiel beginnt wieder bei 3.';
+                        resetMessage = 'Das Spiel beginnt wieder bei 3';
                         break;
                     case 'multiples_4':
-                        resetMessage = 'Das Spiel beginnt wieder bei 4.';
+                        resetMessage = 'Das Spiel beginnt wieder bei 4';
                         break;
                     case 'negative_100_to_0':
-                        resetMessage = 'Das Spiel beginnt wieder bei -100.';
+                        resetMessage = 'Das Spiel beginnt wieder bei -100';
                         break;
                     case 'prime':
-                        resetMessage = 'Das Spiel beginnt wieder bei 2.';
+                        resetMessage = 'Das Spiel beginnt wieder bei 2';
                         break;
                     case 'binary':
-                        resetMessage = 'Das Spiel beginnt wieder bei 1.';
+                        resetMessage = 'Das Spiel beginnt wieder bei 1';
                         break;
                     default:
-                        resetMessage = 'Das Spiel beginnt wieder bei 1.';
+                        resetMessage = 'Das Spiel beginnt wieder bei 1';
                         break;
                 }
                 await message.channel.send({
