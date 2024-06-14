@@ -1,0 +1,79 @@
+const romealToNumber = (romeal) => {
+    const romealMap = {
+        I: 1,
+        V: 5,
+        X: 10,
+        L: 50,
+        C: 100,
+        D: 500,
+        M: 1000
+    };
+
+    let number = 0;
+
+    romeal = romeal.toUpperCase();
+
+    let letterIndex = 0;
+    for (const letter of romeal.toUpperCase()) {
+        const nextLetter = letterIndex != romeal.length ? romeal[letterIndex + 1] : undefined;
+        const nextNextLetter = letterIndex + 1 != romeal.length ? romeal[letterIndex + 2] : undefined;
+        const nextNextNextLetter = letterIndex + 2 != romeal.length ? romeal[letterIndex + 3] : undefined;
+        const letterValue = romealMap[letter];
+        const nextLetterValue = !!nextLetter ? romealMap[nextLetter] : 0;
+
+        if((letter === nextLetter) && (nextLetter === nextNextLetter) 
+            && (nextNextLetter === nextNextNextLetter) && !!nextNextNextLetter)
+            return NaN; // Invalid romeal number
+
+        letterIndex++;
+
+        if (letterValue < nextLetterValue) {
+            number -= letterValue;
+        }
+        else {
+            number += letterValue;
+        }
+    }
+
+    return number;
+}
+
+---
+
+function testRomanToNumber() {
+    console.log("Test Roman to Number:");
+
+    const tests = [
+        { input: 'I', expected: 1 },
+        { input: 'V', expected: 5 },
+        { input: 'X', expected: 10 },
+        { input: 'L', expected: 50 },
+        { input: 'C', expected: 100 },
+        { input: 'D', expected: 500 },
+        { input: 'M', expected: 1000 },
+        { input: 'II', expected: 2 },
+        { input: 'IV', expected: 4 },
+        { input: 'IX', expected: 9 },
+        { input: 'XL', expected: 40 },
+        { input: 'XC', expected: 90 },
+        { input: 'CD', expected: 400 },
+        { input: 'CM', expected: 900 },
+        { input: 'cm', expected: 900 },
+        { input: 'MMXVIII', expected: 2018 },
+        { input: 'MMXIX', expected: 2019},
+        { input: 'MCMXCIV', expected: 1994 },
+        { input: '', expected: 0 },
+        { input: 'IIII', expected: NaN },
+        { input: 'MMMM', expected: NaN },
+        { input: 'ABCD', expected: NaN }
+    ];
+
+    tests.forEach(test => {
+        const result = romealToNumber(test.input);
+        if (result === test.expected) {
+            console.log(`✅ ${test.input} correctly converts to ${test.expected}`);
+        } else {
+            console.error(`❌ Error on ${test.input}: expected ${test.expected}, got ${result}`);
+        }
+    });
+}
