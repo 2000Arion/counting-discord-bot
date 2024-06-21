@@ -1,4 +1,4 @@
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 require('dotenv').config();
 
 const { generateTarget } = require('./gameModes');
@@ -11,8 +11,11 @@ async function initializeDatabase() {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME
-        });
+            database: process.env.DB_NAME,
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0
+        }).promise();
 
         // Teste die Verbindung
         await pool.query('SELECT 1');
@@ -24,50 +27,71 @@ async function initializeDatabase() {
 }
 
 async function getLatestCount() {
-    const [rows] = await pool.query('SELECT number FROM CurrentCount ORDER BY id DESC LIMIT 1');
-    return rows.length > 0 ? rows[0].number : 0;
+    try {
+        const [rows] = await pool.query('SELECT number FROM CurrentCount ORDER BY id DESC LIMIT 1');
+        return rows.length > 0 ? rows[0].number : 0;
+    } catch (error) {
+        console.error('Error fetching latest count:', error);
+        return 0; // Rückgabe eines Standardwerts im Fehlerfall
+    }
 }
 
 async function getLatestSender() {
-    const [rows] = await pool.query('SELECT senderId FROM CurrentCount ORDER BY id DESC LIMIT 1');
-    return rows.length > 0 ? rows[0].senderId : null;
+    try {
+        const [rows] = await pool.query('SELECT senderId FROM CurrentCount ORDER BY id DESC LIMIT 1');
+        return rows.length > 0 ? rows[0].senderId : null;
+    } catch (error) {
+        console.error('Error fetching latest sender:', error);
+        return null; // Rückgabe eines Standardwerts im Fehlerfall
+    }
 }
 
-
 async function updateCount(newCount, senderId) {
-    await pool.query('INSERT INTO CurrentCount (number, senderId) VALUES (?, ?)', [newCount, senderId]);
+    try {
+        await pool.query('INSERT INTO CurrentCount (number, senderId) VALUES (?, ?)', [newCount, senderId]);
+    } catch (error) {
+        console.error('Error updating count:', error);
+    }
 }
 
 async function getMode() {
-    const [rows] = await pool.query('SELECT mode FROM CurrentCount LIMIT 1');
-    if (rows.length > 0) {
-        return rows[0].mode;
-    } else {
-        return 'all'; // Standardmodus, falls keine Daten gefunden werden
+    try {
+        const [rows] = await pool.query('SELECT mode FROM CurrentCount LIMIT 1');
+        return rows.length > 0 ? rows[0].mode : 'all';
+    } catch (error) {
+        console.error('Error fetching mode:', error);
+        return 'all'; // Rückgabe eines Standardmodus im Fehlerfall
     }
 }
 
 async function resetCount(mode) {
-    // Aktualisiere den Modus in der Datenbank
-    await pool.query('UPDATE CurrentCount SET mode = ?', [mode]);
-    // Generiere das Ziel basierend auf dem Modus
-    const target = generateTarget(mode);
-    // Setze den Zählstand auf 0
-    await pool.query('TRUNCATE TABLE CurrentCount');
-    // Füge das neue Ziel in die Datenbank ein
-    await pool.query('INSERT INTO CurrentCount (number, senderId, target, mode) VALUES (0, NULL, ?, ?)', [target, mode]);
+    try {
+        // Aktualisiere den Modus in der Datenbank
+        await pool.query('UPDATE CurrentCount SET mode = ?', [mode]);
+        // Generiere das Ziel basierend auf dem Modus
+        const target = generateTarget(mode);
+        // Setze den Zählstand auf 0 und füge das neue Ziel ein
+        await pool.query('TRUNCATE TABLE CurrentCount');
+        await pool.query('INSERT INTO CurrentCount (number, senderId, target, mode) VALUES (0, NULL, ?, ?)', [target, mode]);
+    } catch (error) {
+        console.error('Error resetting count:', error);
+    }
 }
 
 async function getTarget() {
-    const [rows] = await pool.query('SELECT target FROM CurrentCount ORDER BY id ASC LIMIT 1');
-    return rows.length > 0 ? rows[0].target : null;
+    try {
+        const [rows] = await pool.query('SELECT target FROM CurrentCount ORDER BY id ASC LIMIT 1');
+        return rows.length > 0 ? rows[0].target : null;
+    } catch (error) {
+        console.error('Error fetching target:', error);
+        return null; // Rückgabe eines Standardwerts im Fehlerfall
+    }
 }
 
 async function isValidBinary(binaryString) {
     // Überprüfen, ob latestCount eine gültige Binärzahl ist
     return /^[01]+$/.test(binaryString);
 }
-
 
 module.exports = {
     initializeDatabase,
