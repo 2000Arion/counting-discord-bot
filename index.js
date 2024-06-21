@@ -27,7 +27,7 @@ const rest = new REST().setToken(process.env.TOKEN);
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-        // The put method is used to fully refresh all commands in the guild with the current set
+        // Refresh all commands in the guild with the current set
         const data = await rest.put(
             Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.COUNTING_GUILD_ID),
             { body: commands },
@@ -35,7 +35,6 @@ const rest = new REST().setToken(process.env.TOKEN);
 
         console.log(`Successfully reloaded ${data.length} application (/) commands.`);
     } catch (error) {
-        // And of course, make sure you catch and log any errors!
         console.error(error);
     }
 })();
@@ -46,7 +45,7 @@ client.on('interactionCreate', async (interaction) => {
 
         if (commandName === 'ping') {
             try {
-                await getPing(interaction); // Rufe die getPing-Funktion auf
+                await getPing(interaction);
             } catch (error) {
                 console.error('Error handling ping command:', error);
                 await interaction.reply({ content: 'Ein Fehler ist aufgetreten!', ephemeral: true });
@@ -60,332 +59,155 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
 
-// Funktion, um einen zufälligen Modus auszuwählen
 function getRandomMode() {
     const modes = ['all', 'positive_odd', 'positive_even', 'negative', 'tens', 'fifties', 'hundreds', 'multiples_3', 'multiples_4', 'negative_100_to_0', 'prime', 'binary'];
     return modes[Math.floor(Math.random() * modes.length)];
 }
 
+async function handleInvalidInput(message, mode) {
+    const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
+    await resetCount(mode);
+    const target = await getTarget();
+    await message.react('❌');
+
+    const resetMessageMap = {
+        positive_even: 'Das Spiel beginnt wieder bei 2.',
+        negative: 'Das Spiel beginnt wieder bei -1.',
+        tens: 'Das Spiel beginnt wieder bei 10.',
+        fifties: 'Das Spiel beginnt wieder bei 50.',
+        hundreds: 'Das Spiel beginnt wieder bei 100.',
+        multiples_3: 'Das Spiel beginnt wieder bei 3.',
+        multiples_4: 'Das Spiel beginnt wieder bei 4.',
+        negative_100_to_0: 'Das Spiel beginnt wieder bei -100.',
+        prime: 'Das Spiel beginnt wieder bei 2.',
+        binary: 'Das Spiel beginnt wieder bei 1.',
+        default: 'Das Spiel beginnt wieder bei 1.',
+    };
+
+    const resetMessage = resetMessageMap[mode] || resetMessageMap.default;
+    const errorMessage = target
+        ? `Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`
+        : `Das ist keine Zahl! ${resetMessage}`;
+
+    await message.channel.send({
+        content: errorMessage,
+        embeds: [{
+            title: "Erklärung",
+            description: tutorialDescription,
+            color: 31985
+        }],
+    });
+}
+
 client.on('messageCreate', async (message) => {
-    if (message.channel.id === process.env.COUNTING_CHANNEL_ID && message.guild.id === process.env.COUNTING_GUILD_ID) {
-        if (message.author.bot) return;
+    if (message.channel.id !== process.env.COUNTING_CHANNEL_ID || message.guild.id !== process.env.COUNTING_GUILD_ID) {
+        return;
+    }
 
-        const userCount = parseInt(message.content, 10);
-        const mode = await getMode(); // Aktuellen Modus abrufen
+    if (message.author.bot) {
+        return;
+    }
 
-        if (isNaN(userCount) || message.content.trim() !== userCount.toString()) {
-            const mode = getRandomMode();
-            const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
-            await resetCount(mode);
-            const target = await getTarget();
-            await message.react('❌');
+    const userCount = parseInt(message.content, 10);
+    const mode = await getMode();
 
-            let resetMessage;
-            switch (mode) {
-                case 'positive_even':
-                    resetMessage = 'Das Spiel beginnt wieder bei 2.';
-                    break;
-                case 'negative':
-                    resetMessage = 'Das Spiel beginnt wieder bei -1.';
-                    break;
-                case 'tens':
-                    resetMessage = 'Das Spiel beginnt wieder bei 10.';
-                    break;
-                case 'fifties':
-                    resetMessage = 'Das Spiel beginnt wieder bei 50.';
-                    break;
-                case 'hundreds':
-                    resetMessage = 'Das Spiel beginnt wieder bei 100.';
-                    break;
-                case 'multiples_3':
-                    resetMessage = 'Das Spiel beginnt wieder bei 3.';
-                    break;
-                case 'multiples_4':
-                    resetMessage = 'Das Spiel beginnt wieder bei 4.';
-                    break;
-                case 'negative_100_to_0':
-                    resetMessage = 'Das Spiel beginnt wieder bei -100.';
-                    break;
-                case 'prime':
-                    resetMessage = 'Das Spiel beginnt wieder bei 2.';
-                    break;
-                case 'binary':
-                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
-                    break;
-                default:
-                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
-                    break;
-            }
-            const errorMessage = target ? `Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})` : `Das ist keine Zahl! ${resetMessage}`;
+    if (isNaN(userCount) || message.content.trim() !== userCount.toString()) {
+        const newMode = getRandomMode();
+        await handleInvalidInput(message, newMode);
+        return;
+    }
 
-            await message.channel.send({
-                content: errorMessage,
-                embeds: [
-                    {
-                        title: "Erklärung",
-                        description: tutorialDescription,
-                        color: 31985
-                    }
-                ],
-            });
-            return;
-        }
+    const [latestCount, latestSender] = await Promise.all([getLatestCount(), getLatestSender()]);
 
-        const latestCount = await getLatestCount();
-        const latestSender = await getLatestSender();
-
-        // Überprüfen, ob die eingegebene Zahl basierend auf dem aktuellen Modus korrekt ist
-        let expectedCount;
-        if (mode === 'positive_odd') {
-            if (latestCount === 0) {
-                expectedCount = 1; // Start mit 1
-            } else {
-                expectedCount = latestCount + 2; // Nächste erwartete ungerade Zahl
-            }
-        } else if (mode === 'positive_even') {
-            expectedCount = latestCount + 2; // Nächste erwartete gerade Zahl
-        } else if (mode === 'negative') {
-            expectedCount = latestCount - 1; // Nächste erwartete negative Zahl
-        } else if (mode === 'tens') {
-            if (latestCount === 0) {
-                expectedCount = 10; // Start mit 10
-            } else {
-                expectedCount = latestCount + 10; // Nächste erwartete Zehnerzahl
-            }
-        } else if (mode === 'fifties') {
-            if (latestCount === 0) {
-                expectedCount = 50; // Start mit 50
-            } else {
-                expectedCount = latestCount + 50; // Nächste erwartete Fünftigerzahl
-            }
-        } else if (mode === 'hundreds') {
-            if (latestCount === 0) {
-                expectedCount = 100; // Start mit 100
-            } else {
-                expectedCount = latestCount + 100; // Nächste erwartete Hunderterzahl
-            }
-        } else if (mode === 'multiples_3') {
-            if (latestCount === 0) {
-                expectedCount = 3; // Start mit 3
-            } else {
-                expectedCount = latestCount + 3; // Nächstes erwartetes Vielfaches von 3
-            }
-        } else if (mode === 'multiples_4') {
-            if (latestCount === 0) {
-                expectedCount = 4; // Start mit 4
-            } else {
-                expectedCount = latestCount + 4; // Nächstes erwartetes Vielfaches von 4
-            }
-        } else if (mode === 'negative_100_to_0') {
-            if (latestCount === 0) {
-                expectedCount = -100; // Start mit -100
-            } else {
-                expectedCount = latestCount + 1; // Nächste erwartete Zahl von -100 zu 0
-            }
-        } else if (mode === 'prime') {
-            if (latestCount <= 1) {
-                expectedCount = 2; // Start mit 2
-            } else {
-                // Funktion, um die nächste Primzahl nach latestCount zu finden
-                let isPrime = false;
+    const expectedCount = (() => {
+        switch (mode) {
+            case 'positive_odd':
+                return latestCount === 0 ? 1 : latestCount + 2;
+            case 'positive_even':
+                return latestCount + 2;
+            case 'negative':
+                return latestCount - 1;
+            case 'tens':
+                return latestCount === 0 ? 10 : latestCount + 10;
+            case 'fifties':
+                return latestCount === 0 ? 50 : latestCount + 50;
+            case 'hundreds':
+                return latestCount === 0 ? 100 : latestCount + 100;
+            case 'multiples_3':
+                return latestCount === 0 ? 3 : latestCount + 3;
+            case 'multiples_4':
+                return latestCount === 0 ? 4 : latestCount + 4;
+            case 'negative_100_to_0':
+                return latestCount === 0 ? -100 : latestCount + 1;
+            case 'prime':
+                if (latestCount <= 1) return 2;
                 let candidate = latestCount + 1;
-                while (!isPrime) {
-                    isPrime = true;
-                    for (let i = 2; i <= Math.sqrt(candidate); i++) {
-                        if (candidate % i === 0) {
-                            isPrime = false;
-                            break;
-                        }
+                while (true) {
+                    if (Array.from({ length: Math.floor(Math.sqrt(candidate)) }, (_, i) => i + 2).every(i => candidate % i !== 0)) {
+                        return candidate;
                     }
-                    if (!isPrime) candidate++;
+                    candidate++;
                 }
-                expectedCount = candidate;
-            }
-        } else if (mode === 'binary') {
-            let binaryCount = isValidBinary(latestCount) ? parseInt(latestCount, 2) : 0;
-
-            // Berechnung der nächsten erwarteten binären Zahl
-            if (binaryCount === 0) {
-                expectedCount = '1'; // Start mit '1'
-            } else {
-                expectedCount = (binaryCount + 1).toString(2); // Nächste erwartete Binärzahl
-            }
-        } else {
-            expectedCount = latestCount + 1; // Nächste erwartete Zahl im Standardmodus
+            case 'binary':
+                const binaryCount = isValidBinary(latestCount) ? parseInt(latestCount, 2) : 0;
+                return binaryCount === 0 ? '1' : (binaryCount + 1).toString(2);
+            default:
+                return latestCount + 1;
         }
+    })();
 
-        if (message.author.id == latestSender && process.env.DEV != "true") {
-            const mode = getRandomMode();
-            const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
-            await resetCount(mode);
-            let target = await getTarget(); // Ziel nach dem Zurücksetzen aktualisieren
-            await message.react('❌');
+    if (message.author.id == latestSender && process.env.DEV !== "true") {
+        const newMode = getRandomMode();
+        await handleInvalidInput(message, newMode);
+    } else if (userCount.toString() === expectedCount.toString()) {
+        const target = await getTarget();
+        await updateCount(userCount, message.author.id);
+        if (userCount === target) {
+            const newMode = getRandomMode();
+            const [tutorialTitle, tutorialDescription] = getModeTutorial(newMode);
+            await resetCount(newMode);
+            const newTarget = await getTarget();
 
-            let resetMessage;
-            switch (mode) {
-                case 'negative':
-                    resetMessage = 'Das Spiel beginnt wieder bei -1.';
-                    break;
-                case 'tens':
-                    resetMessage = 'Das Spiel beginnt wieder bei 10.';
-                    break;
-                case 'fifties':
-                    resetMessage = 'Das Spiel beginnt wieder bei 50.';
-                    break;
-                case 'hundreds':
-                    resetMessage = 'Das Spiel beginnt wieder bei 100.';
-                    break;
-                case 'multiples_3':
-                    resetMessage = 'Das Spiel beginnt wieder bei 3.';
-                    break;
-                case 'multiples_4':
-                    resetMessage = 'Das Spiel beginnt wieder bei 4.';
-                    break;
-                case 'negative_100_to_0':
-                    resetMessage = 'Das Spiel beginnt wieder bei -100.';
-                    break;
-                case 'prime':
-                    resetMessage = 'Das Spiel beginnt wieder bei 2.';
-                    break;
-                case 'binary':
-                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
-                    break;
-                default:
-                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
-                    break;
-            }
-            const errorMessage = target ? `Du darfst nicht mehrmals hintereinander zählen! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})` : `Du darfst nicht mehrmals hintereinander zählen! ${resetMessage}`;
+            const resetMessageMap = {
+                negative: 'Das Spiel beginnt wieder bei -1',
+                tens: 'Das Spiel beginnt wieder bei 10',
+                fifties: 'Das Spiel beginnt wieder bei 50',
+                hundreds: 'Das Spiel beginnt wieder bei 100',
+                multiples_3: 'Das Spiel beginnt wieder bei 3',
+                multiples_4: 'Das Spiel beginnt wieder bei 4',
+                negative_100_to_0: 'Das Spiel beginnt wieder bei -100',
+                prime: 'Das Spiel beginnt wieder bei 2',
+                binary: 'Das Spiel beginnt wieder bei 1',
+                default: 'Das Spiel beginnt wieder bei 1',
+            };
+
+            const resetMessage = resetMessageMap[newMode] || resetMessageMap.default;
             await message.channel.send({
-                content: errorMessage,
-                embeds: [
-                    {
-                        title: "Erklärung",
-                        description: tutorialDescription,
-                        color: 31985
-                    }
-                ],
+                content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${newTarget}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
+                embeds: [{
+                    title: "Erklärung",
+                    description: tutorialDescription,
+                    color: 31985
+                }],
             });
-        } else if (userCount.toString() === expectedCount.toString()) {
-            let target = await getTarget();
-            await updateCount(userCount, message.author.id);
-            if (userCount === target) {
-                const mode = getRandomMode();
-                const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
-                await resetCount(mode);
-                await message.react('🎉');
-                let target = await getTarget();
-
-                let resetMessage;
-                switch (mode) {
-                    case 'negative':
-                        resetMessage = 'Das Spiel beginnt wieder bei -1';
-                        break;
-                    case 'tens':
-                        resetMessage = 'Das Spiel beginnt wieder bei 10';
-                        break;
-                    case 'fifties':
-                        resetMessage = 'Das Spiel beginnt wieder bei 50';
-                        break;
-                    case 'hundreds':
-                        resetMessage = 'Das Spiel beginnt wieder bei 100';
-                        break;
-                    case 'multiples_3':
-                        resetMessage = 'Das Spiel beginnt wieder bei 3';
-                        break;
-                    case 'multiples_4':
-                        resetMessage = 'Das Spiel beginnt wieder bei 4';
-                        break;
-                    case 'negative_100_to_0':
-                        resetMessage = 'Das Spiel beginnt wieder bei -100';
-                        break;
-                    case 'prime':
-                        resetMessage = 'Das Spiel beginnt wieder bei 2';
-                        break;
-                    case 'binary':
-                        resetMessage = 'Das Spiel beginnt wieder bei 1';
-                        break;
-                    default:
-                        resetMessage = 'Das Spiel beginnt wieder bei 1';
-                        break;
-                }
-                await message.channel.send({
-                    content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${target}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
-                    embeds: [
-                        {
-                            title: "Erklärung",
-                            description: tutorialDescription,
-                            color: 31985
-                        }
-                    ],
-                });
-            } else {
-                await message.react('✅');
-            }
+            await message.react('🎉');
         } else {
-            const mode = getRandomMode();
-            const [tutorialTitle, tutorialDescription] = getModeTutorial(mode);
-            await resetCount(mode);
-            let target = await getTarget(); // Ziel nach dem Zurücksetzen aktualisieren
-            await message.react('❌');
-
-            let resetMessage;
-            switch (mode) {
-                case 'negative':
-                    resetMessage = 'Das Spiel beginnt wieder bei -1.';
-                    break;
-                case 'tens':
-                    resetMessage = 'Das Spiel beginnt wieder bei 10.';
-                    break;
-                case 'fifties':
-                    resetMessage = 'Das Spiel beginnt wieder bei 50.';
-                    break;
-                case 'hundreds':
-                    resetMessage = 'Das Spiel beginnt wieder bei 100.';
-                    break;
-                case 'multiples_3':
-                    resetMessage = 'Das Spiel beginnt wieder bei 3.';
-                    break;
-                case 'multiples_4':
-                    resetMessage = 'Das Spiel beginnt wieder bei 4.';
-                    break;
-                case 'negative_100_to_0':
-                    resetMessage = 'Das Spiel beginnt wieder bei -100.';
-                    break;
-                case 'prime':
-                    resetMessage = 'Das Spiel beginnt wieder bei 2.';
-                    break;
-                case 'binary':
-                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
-                    break;
-                default:
-                    resetMessage = 'Das Spiel beginnt wieder bei 1.';
-                    break;
-            }
-            const errorMessage = target ? `Falsche Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})` : `Falsche Zahl! ${resetMessage}`;
-
-            await message.channel.send({
-                content: errorMessage,
-                embeds: [
-                    {
-                        title: "Erklärung",
-                        description: tutorialDescription,
-                        color: 31985
-                    }
-                ],
-            });
+            await message.react('✅');
         }
+    } else {
+        const newMode = getRandomMode();
+        await handleInvalidInput(message, newMode);
     }
 });
 
-// Initialisiere die Datenbank und logge den Bot ein, wenn erfolgreich
 initializeDatabase().then(() => {
     client.login(process.env.TOKEN).then(() => {
-        console.log('Bot is running!'); // Wenn erfolgreich eingeloggt, 'Bot is running!' ausgeben
+        console.log('Bot is running!');
     }).catch(error => {
         console.error('Error starting the bot:', error);
-        process.exit(1); // Beendet das Programm bei einem Einlogfehler
+        process.exit(1);
     });
 }).catch(error => {
     console.error('Error initializing the database:', error);
-    process.exit(1); // Beendet das Programm bei einem Initialisierungsfehler
+    process.exit(1);
 });
