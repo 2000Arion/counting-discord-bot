@@ -94,8 +94,8 @@ async function handleInvalidInput(message, mode) {
     const target = await getTarget();
     await message.react('❌');
 
-    // Check if the same user counted twice in a row
     const [latestCount, latestSender] = await Promise.all([getLatestCount(), getLatestSender()]);
+
     if (message.author.id === latestSender && process.env.DEV !== "true") {
         const errorMessage = `Du darfst nicht mehrmals hintereinander zählen! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
 
@@ -107,21 +107,23 @@ async function handleInvalidInput(message, mode) {
                 color: 31985
             }],
         });
-    } else if (!isNaN(parseInt(message.content))) {
-        // Check if the message content is a valid number
-        const errorMessage = `Falsche Zahl! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
+    } else if (isNaN(parseInt(message.content))) {
+        {
+            // Check if the message content is a valid number
+            const errorMessage = `Das ist keine Zahl! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
 
-        await message.channel.send({
-            content: errorMessage,
-            embeds: [{
-                title: "Erklärung",
-                description: tutorialDescription,
-                color: 31985
-            }],
-        });
+            await message.channel.send({
+                content: errorMessage,
+                embeds: [{
+                    title: "Erklärung",
+                    description: tutorialDescription,
+                    color: 31985
+                }],
+            });
+        }
     } else {
-        // Default error message for non-numeric input
-        const errorMessage = `Das ist keine Zahl! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
+        // Default error message for valid number input but not meeting other conditions
+        const errorMessage = `Falsche Zahl! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
 
         await message.channel.send({
             content: errorMessage,
