@@ -2,18 +2,19 @@
   "name": "counting-discord-bot",
   "version": "0.0.2",
   "description": "JS Discord bot for a counting game",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "npx prisma generate && npx prisma db push && node index.ts",
+    "dev": "npx prisma generate && npx prisma db push && npx nodemon ./index.ts",
+    "lint": "eslint"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/2000Arion/counting-discord-bot.git"
   },
   "keywords": [
-    "discord.js",
+    "discord-js",
     "nodejs",
     "discord"
   ],

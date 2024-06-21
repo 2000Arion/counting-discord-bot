@@ -60,3 +60,4 @@ function generateTarget(mode) {
 module.exports = {
     generateTarget
 };
+
