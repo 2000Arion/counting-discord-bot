@@ -1,13 +1,12 @@
 {
   "name": "counting-discord-bot",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "JS Discord bot for a counting game",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx prisma generate && npx prisma db push && node index.ts",
-    "dev": "npx prisma generate && npx prisma db push && npx nodemon ./index.ts",
-    "lint": "eslint"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",

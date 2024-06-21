@@ -25,7 +25,7 @@ If applicable, add screenshots to help explain your problem.
 
 **System Information:**
  - OS: [e.g. Windows, MacOS]
- - Node.js Version: [e.g. v14]
+ - Node.js Version: [e.g. v21]
 
 **Additional context**
 Add any other context about the problem here.
