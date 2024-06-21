@@ -1,7 +1,16 @@
 const { REST, Client, GatewayIntentBits, PresenceUpdateStatus, ActivityType, SlashCommandBuilder, Routes, InteractionType } = require('discord.js');
 require('dotenv').config();
 
-const { initializeDatabase, getLatestCount, getLatestSender, updateCount, getMode, resetCount, getTarget, isValidBinary } = require('./game/gameFunctions');
+const {
+    initializeDatabase,
+    getLatestCount,
+    getLatestSender,
+    updateCount,
+    getMode,
+    resetCount,
+    getTarget,
+    isValidBinary
+} = require('./game/gameFunctions');
 const { getModeTutorial } = require('./game/gameModeTutorials');
 const getPing = require('./commands/getPing');
 
@@ -22,6 +31,21 @@ const commands = [
 ];
 
 const rest = new REST().setToken(process.env.TOKEN);
+
+// Define reset message map outside the function
+const resetMessageMap = {
+    positive_even: 'Das Spiel beginnt wieder bei 2.',
+    negative: 'Das Spiel beginnt wieder bei -1.',
+    tens: 'Das Spiel beginnt wieder bei 10.',
+    fifties: 'Das Spiel beginnt wieder bei 50.',
+    hundreds: 'Das Spiel beginnt wieder bei 100.',
+    multiples_3: 'Das Spiel beginnt wieder bei 3.',
+    multiples_4: 'Das Spiel beginnt wieder bei 4.',
+    negative_100_to_0: 'Das Spiel beginnt wieder bei -100.',
+    prime: 'Das Spiel beginnt wieder bei 2.',
+    binary: 'Das Spiel beginnt wieder bei 1.',
+    default: 'Das Spiel beginnt wieder bei 1.',
+};
 
 (async () => {
     try {
@@ -70,33 +94,44 @@ async function handleInvalidInput(message, mode) {
     const target = await getTarget();
     await message.react('❌');
 
-    const resetMessageMap = {
-        positive_even: 'Das Spiel beginnt wieder bei 2.',
-        negative: 'Das Spiel beginnt wieder bei -1.',
-        tens: 'Das Spiel beginnt wieder bei 10.',
-        fifties: 'Das Spiel beginnt wieder bei 50.',
-        hundreds: 'Das Spiel beginnt wieder bei 100.',
-        multiples_3: 'Das Spiel beginnt wieder bei 3.',
-        multiples_4: 'Das Spiel beginnt wieder bei 4.',
-        negative_100_to_0: 'Das Spiel beginnt wieder bei -100.',
-        prime: 'Das Spiel beginnt wieder bei 2.',
-        binary: 'Das Spiel beginnt wieder bei 1.',
-        default: 'Das Spiel beginnt wieder bei 1.',
-    };
+    // Check if the same user counted twice in a row
+    const [latestCount, latestSender] = await Promise.all([getLatestCount(), getLatestSender()]);
+    if (message.author.id === latestSender && process.env.DEV !== "true") {
+        const errorMessage = `Du darfst nicht mehrmals hintereinander zählen! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
 
-    const resetMessage = resetMessageMap[mode] || resetMessageMap.default;
-    const errorMessage = target
-        ? `Das ist keine Zahl! ${resetMessage} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`
-        : `Das ist keine Zahl! ${resetMessage}`;
+        await message.channel.send({
+            content: errorMessage,
+            embeds: [{
+                title: "Erklärung",
+                description: tutorialDescription,
+                color: 31985
+            }],
+        });
+    } else if (!isNaN(parseInt(message.content))) {
+        // Check if the message content is a valid number
+        const errorMessage = `Falsche Zahl! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
 
-    await message.channel.send({
-        content: errorMessage,
-        embeds: [{
-            title: "Erklärung",
-            description: tutorialDescription,
-            color: 31985
-        }],
-    });
+        await message.channel.send({
+            content: errorMessage,
+            embeds: [{
+                title: "Erklärung",
+                description: tutorialDescription,
+                color: 31985
+            }],
+        });
+    } else {
+        // Default error message for non-numeric input
+        const errorMessage = `Das ist keine Zahl! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
+
+        await message.channel.send({
+            content: errorMessage,
+            embeds: [{
+                title: "Erklärung",
+                description: tutorialDescription,
+                color: 31985
+            }],
+        });
+    }
 }
 
 client.on('messageCreate', async (message) => {
@@ -168,22 +203,8 @@ client.on('messageCreate', async (message) => {
             await resetCount(newMode);
             const newTarget = await getTarget();
 
-            const resetMessageMap = {
-                negative: 'Das Spiel beginnt wieder bei -1',
-                tens: 'Das Spiel beginnt wieder bei 10',
-                fifties: 'Das Spiel beginnt wieder bei 50',
-                hundreds: 'Das Spiel beginnt wieder bei 100',
-                multiples_3: 'Das Spiel beginnt wieder bei 3',
-                multiples_4: 'Das Spiel beginnt wieder bei 4',
-                negative_100_to_0: 'Das Spiel beginnt wieder bei -100',
-                prime: 'Das Spiel beginnt wieder bei 2',
-                binary: 'Das Spiel beginnt wieder bei 1',
-                default: 'Das Spiel beginnt wieder bei 1',
-            };
-
-            const resetMessage = resetMessageMap[newMode] || resetMessageMap.default;
             await message.channel.send({
-                content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessage} und ihr müsst bis **${newTarget}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
+                content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessageMap[newMode] || resetMessageMap.default} und ihr müsst bis **${newTarget}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
                 embeds: [{
                     title: "Erklärung",
                     description: tutorialDescription,
