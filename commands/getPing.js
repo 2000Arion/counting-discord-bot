@@ -15,5 +15,5 @@ module.exports = async (interaction) => {
         .setTimestamp();
 
     // Bearbeite die ursprüngliche Nachricht, um das Embed hinzuzufügen
-    await interaction.editReply({ content: '', embeds: [embed] }); // Leere den Inhalt, da das Embed hinzugefügt wird
+    await interaction.editReply({ embeds: [embed] });
 };
