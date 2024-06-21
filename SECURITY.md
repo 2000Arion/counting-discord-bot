@@ -6,8 +6,11 @@ The following table outlines the versions of this Counting Bot project that are 
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.0   | :white_check_mark: |
+| 0.0.3   | :white_check_mark: |
+| 0.0.2   | :white_check_mark:¹ |
 | 0.0.1   | :x:                |
+
+¹ - Support for this version will be discontinued on 2024-06-23.
 
 ## Reporting a Vulnerability
 
