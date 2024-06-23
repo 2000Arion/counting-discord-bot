@@ -53,7 +53,7 @@ function generateTarget(mode) {
 
         return binaryNumber;
     } else {
-        return Math.floor(Math.random() * (200 - 10 + 1)) + 10; // Zufällige positive Zahl zwischen 10 und 200
+        return Math.floor(Math.random() * (200 - 40 + 1)) + 40; // Zufällige Zahl zwischen 40 und 200
     }
 }
 
