@@ -34,10 +34,10 @@ function getModeTutorial(mode) {
         tutorialDescription = 'Zähle aufwärts von -100: `-100`, `-99`, `-98`, `-97`, ...';
     } else if (mode === 'prime') {
         tutorialTitle = 'Primzahlen';
-        tutorialDescription = 'Zähle nur die Primzahlen: `2`, `3`, `5`, `7`, ...\n\n> **[Weitere Hilfe](https://media.arion2000.xyz/cdn/_uploads/html/source=018f9352-41c4-74cb-ad74-25f50db6578c/#/prime)**';
+        tutorialDescription = 'Zähle nur die Primzahlen: `2`, `3`, `5`, `7`, ...\n\n> **[Weitere Hilfe](https://static.tanjun.bot/pokemon-de/countinghelp/#/prime)**';
     } else if (mode === 'binary') {
         tutorialTitle = 'Binärzahlen';
-        tutorialDescription = 'Zähle in Binärzahlen: `1`, `10`, `11`, `100`, ...\n\n> **[Weitere Hilfe](https://media.arion2000.xyz/cdn/_uploads/html/source=018f9352-41c4-74cb-ad74-25f50db6578c/#/binary)**';
+        tutorialDescription = 'Zähle in Binärzahlen: `1`, `10`, `11`, `100`, ...\n\n> **[Weitere Hilfe](https://static.tanjun.bot/pokemon-de/countinghelp/#/binary)**';
     } else {
         // Wenn der Modus unbekannt ist, Standardwerte setzen
         tutorialTitle = 'Modus nicht gefunden';
