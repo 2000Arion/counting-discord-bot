@@ -48,6 +48,7 @@ COUNTING_GUILD_ID=your_discord_guild_id
 COUNTING_CHANNEL_ID=your_discord_channel_id
 
 DB_HOST=your_mysql_host
+DB_PORT=your_mysql_port
 DB_USER=your_mysql_user
 DB_PASSWORD=your_mysql_password
 DB_NAME=your_mysql_database_name
