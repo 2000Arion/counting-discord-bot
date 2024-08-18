@@ -206,7 +206,7 @@ client.on('messageCreate', async (message) => {
             const newTarget = await getTarget();
 
             await message.channel.send({
-                content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessageMap[newMode] || resetMessageMap.default} und ihr müsst bis **${newTarget}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
+                content: `🎉 Herzlichen Glückwunsch! Das Ziel wurde erreicht.\n${resetMessageMap[newMode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${newTarget}** zählen. Viel Glück! (Modus: ${tutorialTitle})`,
                 embeds: [{
                     title: "Erklärung",
                     description: tutorialDescription,
