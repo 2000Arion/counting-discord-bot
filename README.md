@@ -60,7 +60,7 @@ DEV=true_or_false
 - `CLIENT_ID`: The ID of your Discord bot client.
 - `COUNTING_GUILD_ID`: The ID of the Discord guild where the bot operates.
 - `COUNTING_CHANNEL_ID`: The ID of the channel where counting occurs.
-- `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`: MySQL database connection details.
+- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`: MySQL database connection details.
 - `DEV`: Optional variable to enable development/debug mode.
 
 4. Initialize the database:
