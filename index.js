@@ -186,7 +186,7 @@ client.on('messageCreate', async (message) => {
                     candidate++;
                 }
             case 'binary':
-                const binaryCount = await isValidBinary(latestCount) ? parseInt(latestCount, 2) : 0;
+                await const binaryCount = isValidBinary(latestCount) ? parseInt(latestCount, 2) : 0;
                 return binaryCount === 0 ? '1' : (binaryCount + 1).toString(2);
             default:
                 return latestCount + 1;
