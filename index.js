@@ -94,7 +94,7 @@ async function handleInvalidInput(message, mode) {
     const target = await getTarget();
     await message.react('❌');
 
-    const [latestCount, latestSender] = await Promise.all([getLatestCount(), getLatestSender()]);
+    const latestSender = await getLatestSender();
 
     if (message.author.id === latestSender && process.env.DEV !== "true") {
         const errorMessage = `Du darfst nicht mehrmals hintereinander zählen! ${resetMessageMap[mode] || resetMessageMap.default} In dieser Runde müsst ihr bis **${target}** zählen. (Modus: ${tutorialTitle})`;
