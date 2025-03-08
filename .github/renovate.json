@@ -4,5 +4,6 @@
     "config:recommended"
   ],
   "labels": ["dependencies"],
-  "pruneStaleBranches": true
+  "pruneStaleBranches": true,
+  "rangeStrategy": "bump"
 }
