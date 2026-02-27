@@ -79,7 +79,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.on('ready', () => {
-    client.user.setPresence({ activities: [{ name: 'in den Counting-Kanal', type: ActivityType.Watching }], status: PresenceUpdateStatus.Online });
+    client.user.setPresence({ activities: [{ name: 'Schaut in den Counting-Kanal', type: ActivityType.Watching }], status: PresenceUpdateStatus.Online });
     console.log(`Logged in as ${client.user.tag}`);
 });
 
